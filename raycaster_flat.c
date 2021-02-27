@@ -6,7 +6,7 @@
 /*   By: mhogg <mhogg@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/25 20:06:15 by mhogg             #+#    #+#             */
-/*   Updated: 2021/02/27 00:56:44 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/02/27 13:22:01 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,14 +234,14 @@ int		key_hook(int keycode, t_all *all)
 	if (keycode == 53)
 		exit(0);
 	mlx_destroy_image(all->data->mlx_ptr, all->data->img);
-	if (keycode == 12)
+	if (keycode == 13)
 	{
 		if(map[(int)(all->var->pos_x + all->var->dir_x * moveSpeed)][(int)(all->var->pos_y)] == 0)
 			all->var->pos_x += all->var->dir_x * moveSpeed;
 		if(map[(int)(all->var->pos_x)][(int)(all->var->pos_y + all->var->dir_y * moveSpeed)] == 0)
 			all->var->pos_y += all->var->dir_y * moveSpeed;
 	}
-	if (keycode == 0)
+	if (keycode == 2)
 	{
 		if(map[(int)(all->var->pos_x - all->var->dir_x * moveSpeed)][(int)(all->var->pos_y)] == 0)
 			all->var->pos_x -= all->var->dir_x * moveSpeed;
@@ -256,7 +256,7 @@ int		key_hook(int keycode, t_all *all)
 		if(map[(int)(all->var->pos_x)][(int)(all->var->pos_y - all->var->dir_x * moveSpeed)] == 0)
 			all->var->pos_y -= all->var->dir_x * moveSpeed;
 	}
-	if (keycode == 2)
+	if (keycode == 0)
 	{
 		if(map[(int)(all->var->pos_x - all->var->dir_y * moveSpeed)][(int)(all->var->pos_y)] == 0)
 			all->var->pos_x -= all->var->dir_y * moveSpeed;
@@ -267,7 +267,6 @@ int		key_hook(int keycode, t_all *all)
 	all->data->addr = mlx_get_data_addr(all->data->img, &all->data->bits_per_pixel, &all->data->line_length, &all->data->endian);
 	ft_mlx(*all);
 	mlx_put_image_to_window(all->data->mlx_ptr, all->data->win_ptr, all->data->img, 0, 0);
-	write(1, "open\n", 5);
 	return (0);
 }
 
@@ -293,8 +292,8 @@ int			main(void)
 
 	ft_mlx(all);
 	mlx_put_image_to_window(all.data->mlx_ptr, all.data->win_ptr, all.data->img, 0, 0);
-	//mlx_hook(all.data->win_ptr, 2, (1L << 0), key_hook, &all);
-	mlx_key_hook(all.data->win_ptr, key_hook, &all); 
+	mlx_hook(all.data->win_ptr, 2, (1L << 0), key_hook, &all);
+	//mlx_key_hook(all.data->win_ptr, key_hook, &all); 
 	mlx_hook(all.data->win_ptr, 17, 1L<<0, close_func, 0); //exit on close window
 	write(1, "open\n", 5);
 	mlx_loop(all.data->mlx_ptr);
