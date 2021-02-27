@@ -6,7 +6,7 @@
 /*   By: mhogg <mhogg@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/25 20:06:15 by mhogg             #+#    #+#             */
-/*   Updated: 2021/02/27 13:22:01 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/02/27 16:36:36 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,10 @@ typedef	struct	s_var
 	double		dir_y;
 	double		plane_x;
 	double		plane_y;
-
+	double		old_dir_x;
+	double		old_plane_x;
+	double		move_speed;
+	double		rot_speed;
 }				t_var;
 
 typedef struct	s_all
@@ -228,41 +231,71 @@ void		ft_mlx(t_all all)
 	}	
 }
 
+void rotate_right(t_all *all)
+{
+	//rotate to the right
+    //both camera direction and camera plane must be rotated
+    all->var->old_dir_x = all->var->dir_x;
+    all->var->dir_x = all->var->dir_x * cos(-all->var->rot_speed) - all->var->dir_y * sin(-all->var->rot_speed);
+    all->var->dir_y = all->var->old_dir_x * sin(-all->var->rot_speed) + all->var->dir_y * cos(-all->var->rot_speed);
+    all->var->old_plane_x = all->var->plane_x;
+    all->var->plane_x = all->var->plane_x * cos(-all->var->rot_speed) - all->var->plane_y * sin(-all->var->rot_speed);
+    all->var->plane_y = all->var->old_plane_x * sin(-all->var->rot_speed) + all->var->plane_y * cos(-all->var->rot_speed);
+   
+}
+	
+void rotate_left(t_all *all)
+{
+	//rotate to the left
+    //both camera direction and camera plane must be rotated
+	all->var->old_dir_x = all->var->dir_x;
+    all->var->dir_x = all->var->dir_x * cos(all->var->rot_speed) - all->var->dir_y * sin(all->var->rot_speed);
+    all->var->dir_y = all->var->old_dir_x * sin(all->var->rot_speed) + all->var->dir_y * cos(all->var->rot_speed);
+    all->var->old_plane_x = all->var->plane_x;
+    all->var->plane_x = all->var->plane_x * cos(all->var->rot_speed) - all->var->plane_y * sin(all->var->rot_speed);
+    all->var->plane_y = all->var->old_plane_x * sin(all->var->rot_speed) + all->var->plane_y * cos(all->var->rot_speed);
+}   
+
 int		key_hook(int keycode, t_all *all)
 {
-	float moveSpeed = 0.3;
+	//float moveSpeed = 0.3;
 	if (keycode == 53)
 		exit(0);
 	mlx_destroy_image(all->data->mlx_ptr, all->data->img);
 	if (keycode == 13)
 	{
-		if(map[(int)(all->var->pos_x + all->var->dir_x * moveSpeed)][(int)(all->var->pos_y)] == 0)
-			all->var->pos_x += all->var->dir_x * moveSpeed;
-		if(map[(int)(all->var->pos_x)][(int)(all->var->pos_y + all->var->dir_y * moveSpeed)] == 0)
-			all->var->pos_y += all->var->dir_y * moveSpeed;
+		if(map[(int)(all->var->pos_x + all->var->dir_x * all->var->move_speed)][(int)(all->var->pos_y)] == 0)
+			all->var->pos_x += all->var->dir_x * all->var->move_speed;
+		if(map[(int)(all->var->pos_x)][(int)(all->var->pos_y + all->var->dir_y * all->var->move_speed)] == 0)
+			all->var->pos_y += all->var->dir_y * all->var->move_speed;
 	}
 	if (keycode == 2)
 	{
-		if(map[(int)(all->var->pos_x - all->var->dir_x * moveSpeed)][(int)(all->var->pos_y)] == 0)
-			all->var->pos_x -= all->var->dir_x * moveSpeed;
-		if(map[(int)(all->var->pos_x)][(int)(all->var->pos_y - all->var->dir_y * moveSpeed)] == 0)
-			all->var->pos_y -= all->var->dir_y * moveSpeed;
+		if(map[(int)(all->var->pos_x - all->var->dir_x * all->var->move_speed)][(int)(all->var->pos_y)] == 0)
+			all->var->pos_x -= all->var->dir_x * all->var->move_speed;
+		if(map[(int)(all->var->pos_x)][(int)(all->var->pos_y - all->var->dir_y * all->var->move_speed)] == 0)
+			all->var->pos_y -= all->var->dir_y * all->var->move_speed;
 	}
 
 	if (keycode == 1)
 	{
-		if(map[(int)(all->var->pos_x + all->var->dir_y * moveSpeed)][(int)(all->var->pos_y)] == 0)
-			all->var->pos_x += all->var->dir_y * moveSpeed;
-		if(map[(int)(all->var->pos_x)][(int)(all->var->pos_y - all->var->dir_x * moveSpeed)] == 0)
-			all->var->pos_y -= all->var->dir_x * moveSpeed;
+		if(map[(int)(all->var->pos_x + all->var->dir_y * all->var->move_speed)][(int)(all->var->pos_y)] == 0)
+			all->var->pos_x += all->var->dir_y * all->var->move_speed;
+		if(map[(int)(all->var->pos_x)][(int)(all->var->pos_y - all->var->dir_x * all->var->move_speed)] == 0)
+			all->var->pos_y -= all->var->dir_x * all->var->move_speed;
 	}
 	if (keycode == 0)
 	{
-		if(map[(int)(all->var->pos_x - all->var->dir_y * moveSpeed)][(int)(all->var->pos_y)] == 0)
-			all->var->pos_x -= all->var->dir_y * moveSpeed;
-		if(map[(int)(all->var->pos_x)][(int)(all->var->pos_y + all->var->dir_x * moveSpeed)] == 0)
-			all->var->pos_y += all->var->dir_x * moveSpeed;
+		if(map[(int)(all->var->pos_x - all->var->dir_y * all->var->move_speed)][(int)(all->var->pos_y)] == 0)
+			all->var->pos_x -= all->var->dir_y * all->var->move_speed;
+		if(map[(int)(all->var->pos_x)][(int)(all->var->pos_y + all->var->dir_x * all->var->move_speed)] == 0)
+			all->var->pos_y += all->var->dir_x * all->var->move_speed;
 	}
+	if (keycode == 123)
+		rotate_left(all);
+	if (keycode == 124)
+		rotate_right(all);
+		
 	all->data->img = mlx_new_image(all->data->mlx_ptr, img_width, img_height);
 	all->data->addr = mlx_get_data_addr(all->data->img, &all->data->bits_per_pixel, &all->data->line_length, &all->data->endian);
 	ft_mlx(*all);
@@ -273,17 +306,11 @@ int		key_hook(int keycode, t_all *all)
 int			main(void)
 {
 	t_data	data;
-	t_var	var;
+	t_var	var = {.pos_x = 22, .pos_y = 12, .dir_x = -1, .dir_y = -1, .plane_x = 0, .plane_y = 0.66, .move_speed = 0.3, .rot_speed = 0.3};
 	t_all	all;
 	
 	all.data = &data;
 	all.var = &var;
-	all.var->pos_x = 22;
-	all.var->pos_y = 12;
-	all.var->dir_x = -1;
-	all.var->dir_y = -1;
-	all.var->plane_x = 0;
-	all.var->plane_y = 0.66;
 	
 	all.data->mlx_ptr = mlx_init();
 	all.data->win_ptr = mlx_new_window(all.data->mlx_ptr, img_width, img_height, "cub3D");
@@ -292,7 +319,7 @@ int			main(void)
 
 	ft_mlx(all);
 	mlx_put_image_to_window(all.data->mlx_ptr, all.data->win_ptr, all.data->img, 0, 0);
-	mlx_hook(all.data->win_ptr, 2, (1L << 0), key_hook, &all);
+	mlx_hook(all.data->win_ptr, 2, 1L<<0, key_hook, &all);
 	//mlx_key_hook(all.data->win_ptr, key_hook, &all); 
 	mlx_hook(all.data->win_ptr, 17, 1L<<0, close_func, 0); //exit on close window
 	write(1, "open\n", 5);
