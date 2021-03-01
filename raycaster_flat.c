@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   raycaster_flat.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhogg <mhogg@student.42.fr>                +#+  +:+       +#+        */
+/*   By: mhogg <mhogg@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/25 20:06:15 by mhogg             #+#    #+#             */
-/*   Updated: 2021/02/27 16:36:36 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/02 03:07:28 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,14 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <math.h>
-#include <mlx.h>
+#include "mlx/mlx.h"
 
 #define img_width 640
 #define img_height 480
 #define map_width 24
 #define map_height 24
+#define tex_width 64
+#define tex_height 64
 
 typedef struct  s_data
 {
@@ -33,12 +35,23 @@ typedef struct  s_data
 	int			endian;
 }               t_data;
 
+typedef	struct	s_parce
+{
+	int			m_width;
+	int			m_height;
+}				t_parce;
+
+
 typedef	struct	s_var
 {
 	double		pos_x;
 	double		pos_y;
 	double		dir_x;
 	double		dir_y;
+	double		step_x;
+	double		step_y;
+	double		draw_start;
+	double		draw_end;
 	double		plane_x;
 	double		plane_y;
 	double		old_dir_x;
@@ -50,24 +63,26 @@ typedef	struct	s_var
 typedef struct	s_all
 {
 	t_data		*data;
+	t_parce		*parce;
 	t_var		*var;
 	
 	
 }				t_all;
-
-void	ft_mlx(t_all all);
 
 int		close_func(void)
 {
 	exit(0);
 }
 
-// int		key_hook(int key)
-// {
-// 	if (key == 53)
-// 		exit(0);
-// 	return (0);
-// }
+unsigned int	my_mlx_pixel_take(t_all all, int x, int y)
+{
+	char			*addr;
+	unsigned int	color;
+	
+	addr = all.data->addr + (y * all.data->line_length + x * (all.data->bits_per_pixel / 8));
+	color = *(unsigned int*)addr;
+	return (color);
+}
 
 void	my_mlx_pixel_put(t_all all, int x, int y, int color)
 {
@@ -83,11 +98,11 @@ int map[map_width][map_height]=
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,2,2,2,2,2,0,0,0,0,3,0,3,0,3,0,0,0,1},
+  {1,0,0,0,0,0,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,3,0,0,0,3,0,0,0,1},
   {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,2,2,0,2,2,0,0,0,0,3,0,3,0,3,0,0,0,1},
+  {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,2,2,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
@@ -95,15 +110,60 @@ int map[map_width][map_height]=
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,4,0,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,4,0,0,0,0,5,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,4,0,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,4,0,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
 };
+
+// void put_texture(t_all *all)
+// {
+// 	int	x = 0;
+// 	int	y = 0;	
+// 	while (y < map_height)
+// 	{
+// 		if (y < all->var->draw_start)
+// 			my_mlx_pixel_put(*all, x, y, 0xFFFFFF);
+// 		if (y >= all->var->draw_start && y <= all->var->draw_end)
+// 		{
+// 			all->var->tex_y = (int)all->var->tex_pos & (texHeight - 1);
+// 			all->var->tex_pos += all->var->step;
+// 			if (all->var->side == 0)
+// 			{
+// 					if (all->var->step_x > 0)
+// 					{
+// 						int color = my_mlx_pixel_take(&all->textures_north, all->var->tex_x, all->var->tex_y);
+// 						my_mlx_pixel_put(&all->data, x, y, color);
+// 					}
+// 					else if (all->var->step_x < 0)
+// 					{
+// 						int color = my_mlx_pixel_take(&all->textures_south, all->var->tex_x, all->var->tex_y);
+// 						my_mlx_pixel_put(&all->data, x, y, color);
+// 					}
+// 				}
+// 				if (all->var->side == 1)
+// 				{
+// 					if (all->var->step_y > 0)
+// 					{
+// 						int color = my_mlx_pixel_take(&all->textures_west, all->var->tex_x, all->var->tex_y);
+// 						my_mlx_pixel_put(&all->data, x, y, color);
+// 					}
+// 					else if (all->var->step_y < 0)
+// 					{
+// 						int color = my_mlx_pixel_take(&all->textures_east, all->var->tex_x, all->var->tex_y);
+// 						my_mlx_pixel_put(&all->data, x, y, color);
+// 					}
+// 				}
+// 			}
+// 			if (y > all->var->draw_end)
+// 				my_mlx_pixel_put(&all->data, x, y, 0x12376d);
+// 			y++;
+// 		}
+// }
 
 void		ft_mlx(t_all all)
 {
@@ -132,30 +192,27 @@ void		ft_mlx(t_all all)
 		double perpWallDist;
 
       //what direction to step in x or y-direction (either +1 or -1)
-		int stepX;
-		int stepY;
-
 		int hit = 0; //was there a wall hit?
 		int side; //was a NS or a EW wall hit?
       //calculate step and initial sideDist
 		if(rayDirX < 0)
 		{
-			stepX = -1;
+			all.var->step_x = -1;
 			sideDistX = (all.var->pos_x - mapX) * deltaDistX;
 		}
 		else
 		{
-			stepX = 1;
+			all.var->step_x = 1;
 			sideDistX = (mapX + 1.0 - all.var->pos_x) * deltaDistX;
 		}
 		if(rayDirY < 0)
 		{
-			stepY = -1;
+			all.var->step_y = -1;
 			sideDistY = (all.var->pos_y - mapY) * deltaDistY;
 		}
 		else
 		{
-			stepY = 1;
+			all.var->step_y = 1;
 			sideDistY = (mapY + 1.0 - all.var->pos_y) * deltaDistY;
 		}
 	//perform DDA
@@ -165,13 +222,13 @@ void		ft_mlx(t_all all)
 			if(sideDistX < sideDistY)
 			{
 				sideDistX += deltaDistX;
-				mapX += stepX;
+				mapX += all.var->step_x;
 				side = 0;
 			}
 			else
 			{
 				sideDistY += deltaDistY;
-				mapY += stepY;
+				mapY += all.var->step_y;
 				side = 1;
 			}
 			//Check if ray has hit a wall
@@ -180,58 +237,90 @@ void		ft_mlx(t_all all)
 		}
 		//Calculate distance projected on camera direction (Euclidean distance will give fisheye effect!)
 		if(side == 0)
-			perpWallDist = (mapX - all.var->pos_x + (1 - stepX) / 2) / rayDirX;
+			perpWallDist = (mapX - all.var->pos_x + (1 - all.var->step_x) / 2) / rayDirX;
 		else
-			perpWallDist = (mapY - all.var->pos_y + (1 - stepY) / 2) / rayDirY;
+			perpWallDist = (mapY - all.var->pos_y + (1 - all.var->step_y) / 2) / rayDirY;
 
-      //Calculate height of line to draw on screen
+      	//Calculate height of line to draw on screen
 		int lineHeight = (int)(img_height / perpWallDist);
 		
 		//calculate lowest and highest pixel to fill in current stripe
-		int drawStart = -lineHeight / 2 + img_height / 2;
-		if(drawStart < 0)
-			drawStart = 0;
-		int drawEnd = lineHeight / 2 + img_height / 2;
-		if(drawEnd >= img_height)
-			drawEnd = img_height - 1;
-		int y = 0;
+		all.var->draw_start = -lineHeight / 2 + img_height / 2;
+		if(all.var->draw_start < 0)
+			all.var->draw_start = 0;
+		all.var->draw_end = lineHeight / 2 + img_height / 2;
+		if(all.var->draw_end >= img_height)
+			all.var->draw_end = img_height - 1;
 		
 		// float moveSpeed = 0.3;
 		
 		// 		while (y < img_height)
 		// 		{
-		// 			if (y >= drawStart && y <= drawEnd)
+		// 			if (y >= all.var->draw_start && y <= all.var->draw_end)
 		// 				my_mlx_pixel_put(all, x, y, 0xFFFFFF);
 		// 			y++;
 		// 		}
-
-		//coloring walls
-		while (y < img_height)
+		
+		
+		int	y = 0;
+		while (y < img_height)								//coloring walls
 		{
-			if (y >= drawStart && y <= drawEnd)
+			if (y < all.var->draw_start) 					//ceiling
+				my_mlx_pixel_put(all, x, y, 0x333333);
+			if (y > all.var->draw_end) 								//floor
+				my_mlx_pixel_put(all, x, y, 0xAAAAAA);
+			if (y >= all.var->draw_start && y <= all.var->draw_end)
 			{
 				if (side == 0)				// S N
 				{
-					if (all.var->dir_x > 0)
-						my_mlx_pixel_put(all, x, y, 0xFF0000);
+					if (all.var->dir_x >= 0)
+						my_mlx_pixel_put(all, x, y, 0xFF0000); // s - red
 					else if (all.var->dir_x < 0)
-						my_mlx_pixel_put(all, x, y, 0x00FF00);
+						my_mlx_pixel_put(all, x, y, 0x00FF00); // n - green
 				}
 				if (side == 1)				// W E
 				{
-					if (all.var->dir_y > 0)
-						my_mlx_pixel_put(all, x, y, 0x0000FF);
+					if (all.var->dir_y >= 0)
+						my_mlx_pixel_put(all, x, y, 0x0000FF); // w - blue
 					else if (all.var->dir_y < 0)
-						my_mlx_pixel_put(all, x, y, 0xFFFFFF);
+						my_mlx_pixel_put(all, x, y, 0xFFFFFF);	// e - white
 				}
 			}
 			y++;
 		}
+		
+	// 	      //calculate value of wallX
+	// double wallX; //where exactly the wall was hit
+	// if(side == 0) wallX = posY + perpWallDist * rayDirY;
+	// else          wallX = posX + perpWallDist * rayDirX;
+	// wallX -= floor((wallX));
+
+    //   //x coordinate on the texture
+	// int texX = int(wallX * double(texWidth));
+	// if(side == 0 && rayDirX > 0) texX = texWidth - texX - 1;
+	// if(side == 1 && rayDirY < 0) texX = texWidth - texX - 1;
+
+    //   // TODO: an integer-only bresenham or DDA like algorithm could make the texture coordinate stepping faster
+    //   // How much to increase the texture coordinate per screen pixel
+	// double step = 1.0 * texHeight / lineHeight;
+    //   // Starting texture coordinate
+	// double texPos = (drawStart - h / 2 + lineHeight / 2) * step;
+	// 	for(int y = drawStart; y < drawEnd; y++)
+    //   {
+    //     // Cast the texture coordinate to integer, and mask with (texHeight - 1) in case of overflow
+    //     int texY = (int)texPos & (texHeight - 1);
+    //     texPos += step;
+    //     Uint32 color = texture[texNum][texHeight * texY + texX];
+    //     //make color darker for y-sides: R, G and B byte each divided through two with a "shift" and an "and"
+    //     if(side == 1) color = (color >> 1) & 8355711;
+    //     buffer[y][x] = color;
+    //   }
+		
 		x++;
 	}	
 }
 
-void rotate_right(t_all *all)
+void	rotate_right(t_all *all)
 {
 	//rotate to the right
     //both camera direction and camera plane must be rotated
@@ -244,7 +333,7 @@ void rotate_right(t_all *all)
    
 }
 	
-void rotate_left(t_all *all)
+void	rotate_left(t_all *all)
 {
 	//rotate to the left
     //both camera direction and camera plane must be rotated
@@ -256,46 +345,55 @@ void rotate_left(t_all *all)
     all->var->plane_y = all->var->old_plane_x * sin(all->var->rot_speed) + all->var->plane_y * cos(all->var->rot_speed);
 }   
 
+void	move_left(t_all *all)
+{
+	if(map[(int)(all->var->pos_x - all->var->dir_y * all->var->move_speed)][(int)(all->var->pos_y)] == 0)
+		all->var->pos_x -= all->var->dir_y * all->var->move_speed;
+	if(map[(int)(all->var->pos_x)][(int)(all->var->pos_y + all->var->dir_x * all->var->move_speed)] == 0)
+		all->var->pos_y += all->var->dir_x * all->var->move_speed;
+}
+
+void	move_right(t_all *all)
+{
+	if(map[(int)(all->var->pos_x + all->var->dir_y * all->var->move_speed)][(int)(all->var->pos_y)] == 0)
+		all->var->pos_x += all->var->dir_y * all->var->move_speed;
+	if(map[(int)(all->var->pos_x)][(int)(all->var->pos_y - all->var->dir_x * all->var->move_speed)] == 0)
+		all->var->pos_y -= all->var->dir_x * all->var->move_speed;
+}
+
+void	move_forward(t_all *all)
+{
+	if(map[(int)(all->var->pos_x + all->var->dir_x * all->var->move_speed)][(int)(all->var->pos_y)] == 0)
+		all->var->pos_x += all->var->dir_x * all->var->move_speed;
+	if(map[(int)(all->var->pos_x)][(int)(all->var->pos_y + all->var->dir_y * all->var->move_speed)] == 0)
+		all->var->pos_y += all->var->dir_y * all->var->move_speed;
+}
+
+void	move_back(t_all *all)
+{
+	if(map[(int)(all->var->pos_x - all->var->dir_x * all->var->move_speed)][(int)(all->var->pos_y)] == 0)
+		all->var->pos_x -= all->var->dir_x * all->var->move_speed;
+	if(map[(int)(all->var->pos_x)][(int)(all->var->pos_y - all->var->dir_y * all->var->move_speed)] == 0)
+		all->var->pos_y -= all->var->dir_y * all->var->move_speed;
+}
+
 int		key_hook(int keycode, t_all *all)
 {
-	//float moveSpeed = 0.3;
 	if (keycode == 53)
 		exit(0);
 	mlx_destroy_image(all->data->mlx_ptr, all->data->img);
 	if (keycode == 13)
-	{
-		if(map[(int)(all->var->pos_x + all->var->dir_x * all->var->move_speed)][(int)(all->var->pos_y)] == 0)
-			all->var->pos_x += all->var->dir_x * all->var->move_speed;
-		if(map[(int)(all->var->pos_x)][(int)(all->var->pos_y + all->var->dir_y * all->var->move_speed)] == 0)
-			all->var->pos_y += all->var->dir_y * all->var->move_speed;
-	}
-	if (keycode == 2)
-	{
-		if(map[(int)(all->var->pos_x - all->var->dir_x * all->var->move_speed)][(int)(all->var->pos_y)] == 0)
-			all->var->pos_x -= all->var->dir_x * all->var->move_speed;
-		if(map[(int)(all->var->pos_x)][(int)(all->var->pos_y - all->var->dir_y * all->var->move_speed)] == 0)
-			all->var->pos_y -= all->var->dir_y * all->var->move_speed;
-	}
-
+		move_forward(all);
 	if (keycode == 1)
-	{
-		if(map[(int)(all->var->pos_x + all->var->dir_y * all->var->move_speed)][(int)(all->var->pos_y)] == 0)
-			all->var->pos_x += all->var->dir_y * all->var->move_speed;
-		if(map[(int)(all->var->pos_x)][(int)(all->var->pos_y - all->var->dir_x * all->var->move_speed)] == 0)
-			all->var->pos_y -= all->var->dir_x * all->var->move_speed;
-	}
+		move_back(all);
+	if (keycode == 2)
+		move_right(all);
 	if (keycode == 0)
-	{
-		if(map[(int)(all->var->pos_x - all->var->dir_y * all->var->move_speed)][(int)(all->var->pos_y)] == 0)
-			all->var->pos_x -= all->var->dir_y * all->var->move_speed;
-		if(map[(int)(all->var->pos_x)][(int)(all->var->pos_y + all->var->dir_x * all->var->move_speed)] == 0)
-			all->var->pos_y += all->var->dir_x * all->var->move_speed;
-	}
+		move_left(all);
 	if (keycode == 123)
 		rotate_left(all);
 	if (keycode == 124)
 		rotate_right(all);
-		
 	all->data->img = mlx_new_image(all->data->mlx_ptr, img_width, img_height);
 	all->data->addr = mlx_get_data_addr(all->data->img, &all->data->bits_per_pixel, &all->data->line_length, &all->data->endian);
 	ft_mlx(*all);
@@ -306,7 +404,7 @@ int		key_hook(int keycode, t_all *all)
 int			main(void)
 {
 	t_data	data;
-	t_var	var = {.pos_x = 22, .pos_y = 12, .dir_x = -1, .dir_y = -1, .plane_x = 0, .plane_y = 0.66, .move_speed = 0.3, .rot_speed = 0.3};
+	t_var	var = {.pos_x = 22, .pos_y = 12, .dir_x = -1, .dir_y = 1, .plane_x = 0, .plane_y = 0.66, .move_speed = 0.3, .rot_speed = 0.3};
 	t_all	all;
 	
 	all.data = &data;

@@ -1,5 +1,5 @@
 NAME = cub3D
-SRC = main.c
+SRC = raycaster_flat.c
 HEADER = cub3d.h
 OBJ = $(SRC:%.c=%.o)
 CC = gcc
