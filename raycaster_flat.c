@@ -6,89 +6,32 @@
 /*   By: mhogg <mhogg@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/25 20:06:15 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/02 03:07:28 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/03 02:10:42 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <math.h>
-#include "mlx/mlx.h"
-
-#define img_width 640
-#define img_height 480
-#define map_width 24
-#define map_height 24
-#define tex_width 64
-#define tex_height 64
-
-typedef struct  s_data
-{
-	void		*mlx_ptr;
-	void		*win_ptr;
-	void		*img;
-	char		*addr;
-	int			bits_per_pixel;
-	int			line_length;
-	int			endian;
-}               t_data;
-
-typedef	struct	s_parce
-{
-	int			m_width;
-	int			m_height;
-}				t_parce;
-
-
-typedef	struct	s_var
-{
-	double		pos_x;
-	double		pos_y;
-	double		dir_x;
-	double		dir_y;
-	double		step_x;
-	double		step_y;
-	double		draw_start;
-	double		draw_end;
-	double		plane_x;
-	double		plane_y;
-	double		old_dir_x;
-	double		old_plane_x;
-	double		move_speed;
-	double		rot_speed;
-}				t_var;
-
-typedef struct	s_all
-{
-	t_data		*data;
-	t_parce		*parce;
-	t_var		*var;
-	
-	
-}				t_all;
+#include "cub.h"
 
 int		close_func(void)
 {
 	exit(0);
 }
 
-unsigned int	my_mlx_pixel_take(t_all all, int x, int y)
+unsigned int	my_mlx_pixel_take(t_data *data, int x, int y)
 {
 	char			*addr;
 	unsigned int	color;
 	
-	addr = all.data->addr + (y * all.data->line_length + x * (all.data->bits_per_pixel / 8));
+	addr = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
 	color = *(unsigned int*)addr;
 	return (color);
 }
 
-void	my_mlx_pixel_put(t_all all, int x, int y, int color)
+void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 {
     char    *dst;
 
-    dst = all.data->addr + (y * all.data->line_length + x * (all.data->bits_per_pixel / 8));
+    dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
     *(unsigned int*)dst = color;
 }
 
@@ -120,50 +63,12 @@ int map[map_width][map_height]=
   {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
 };
 
-// void put_texture(t_all *all)
-// {
-// 	int	x = 0;
-// 	int	y = 0;	
-// 	while (y < map_height)
-// 	{
-// 		if (y < all->var->draw_start)
-// 			my_mlx_pixel_put(*all, x, y, 0xFFFFFF);
-// 		if (y >= all->var->draw_start && y <= all->var->draw_end)
-// 		{
-// 			all->var->tex_y = (int)all->var->tex_pos & (texHeight - 1);
-// 			all->var->tex_pos += all->var->step;
-// 			if (all->var->side == 0)
-// 			{
-// 					if (all->var->step_x > 0)
-// 					{
-// 						int color = my_mlx_pixel_take(&all->textures_north, all->var->tex_x, all->var->tex_y);
-// 						my_mlx_pixel_put(&all->data, x, y, color);
-// 					}
-// 					else if (all->var->step_x < 0)
-// 					{
-// 						int color = my_mlx_pixel_take(&all->textures_south, all->var->tex_x, all->var->tex_y);
-// 						my_mlx_pixel_put(&all->data, x, y, color);
-// 					}
-// 				}
-// 				if (all->var->side == 1)
-// 				{
-// 					if (all->var->step_y > 0)
-// 					{
-// 						int color = my_mlx_pixel_take(&all->textures_west, all->var->tex_x, all->var->tex_y);
-// 						my_mlx_pixel_put(&all->data, x, y, color);
-// 					}
-// 					else if (all->var->step_y < 0)
-// 					{
-// 						int color = my_mlx_pixel_take(&all->textures_east, all->var->tex_x, all->var->tex_y);
-// 						my_mlx_pixel_put(&all->data, x, y, color);
-// 					}
-// 				}
-// 			}
-// 			if (y > all->var->draw_end)
-// 				my_mlx_pixel_put(&all->data, x, y, 0x12376d);
-// 			y++;
-// 		}
-// }
+void put_texture(t_all *all)
+{
+	int	x = 0;
+	int	y = 0;	
+	
+}
 
 void		ft_mlx(t_all all)
 {
@@ -266,24 +171,60 @@ void		ft_mlx(t_all all)
 		while (y < img_height)								//coloring walls
 		{
 			if (y < all.var->draw_start) 					//ceiling
-				my_mlx_pixel_put(all, x, y, 0x333333);
+				my_mlx_pixel_put(all.data, x, y, 0x333333);
 			if (y > all.var->draw_end) 								//floor
-				my_mlx_pixel_put(all, x, y, 0xAAAAAA);
+				my_mlx_pixel_put(all.data, x, y, 0xAAAAAA);
+				
+		// 		//textures
+		// 	if (y >= all.var->draw_start && y <= all.var->draw_end)
+		// 	{
+		// 		all.var->tex_y = (int)all.var->tex_pos & (tex_height - 1);
+		// 		all.var->tex_pos += all.var->step;
+		// 		if (all.var->side == 0)
+		// 		{
+		// 				if (all.var->step_x > 0)
+		// 				{
+		// 					int color = my_mlx_pixel_take(all.tex_north, all.var->tex_x, all.var->tex_y);
+		// 					my_mlx_pixel_put(all.data, x, y, color);
+		// 				}
+		// 				else if (all.var->step_x < 0)
+		// 				{
+		// 					int color = my_mlx_pixel_take(all.tex_south, all.var->tex_x, all.var->tex_y);
+		// 					my_mlx_pixel_put(all.data, x, y, color);
+		// 				}
+		// 			}
+		// 			if (all.var->side == 1)
+		// 			{
+		// 				if (all.var->step_y > 0)
+		// 				{
+		// 					int color = my_mlx_pixel_take(all.tex_west, all.var->tex_x, all.var->tex_y);
+		// 					my_mlx_pixel_put(all.data, x, y, color);
+		// 				}
+		// 				else if (all.var->step_y < 0)
+		// 				{
+		// 					int color = my_mlx_pixel_take(all.tex_east, all.var->tex_x, all.var->tex_y);
+		// 					my_mlx_pixel_put(all.data, x, y, color);
+		// 				}
+		// 			}
+		// 		}
+		// 		y++;
+		// }
+		
 			if (y >= all.var->draw_start && y <= all.var->draw_end)
 			{
 				if (side == 0)				// S N
 				{
 					if (all.var->dir_x >= 0)
-						my_mlx_pixel_put(all, x, y, 0xFF0000); // s - red
+						my_mlx_pixel_put(all.data, x, y, 0xFF0000); // s - red
 					else if (all.var->dir_x < 0)
-						my_mlx_pixel_put(all, x, y, 0x00FF00); // n - green
+						my_mlx_pixel_put(all.data, x, y, 0x00FF00); // n - green
 				}
 				if (side == 1)				// W E
 				{
 					if (all.var->dir_y >= 0)
-						my_mlx_pixel_put(all, x, y, 0x0000FF); // w - blue
+						my_mlx_pixel_put(all.data, x, y, 0x0000FF); // w - blue
 					else if (all.var->dir_y < 0)
-						my_mlx_pixel_put(all, x, y, 0xFFFFFF);	// e - white
+						my_mlx_pixel_put(all.data, x, y, 0xFFFFFF);	// e - white
 				}
 			}
 			y++;
@@ -381,7 +322,7 @@ int		key_hook(int keycode, t_all *all)
 {
 	if (keycode == 53)
 		exit(0);
-	mlx_destroy_image(all->data->mlx_ptr, all->data->img);
+	mlx_destroy_image(all->mlx->mlx_ptr, all->data->img);
 	if (keycode == 13)
 		move_forward(all);
 	if (keycode == 1)
@@ -394,32 +335,46 @@ int		key_hook(int keycode, t_all *all)
 		rotate_left(all);
 	if (keycode == 124)
 		rotate_right(all);
-	all->data->img = mlx_new_image(all->data->mlx_ptr, img_width, img_height);
+	all->data->img = mlx_new_image(all->mlx->mlx_ptr, img_width, img_height);
 	all->data->addr = mlx_get_data_addr(all->data->img, &all->data->bits_per_pixel, &all->data->line_length, &all->data->endian);
 	ft_mlx(*all);
-	mlx_put_image_to_window(all->data->mlx_ptr, all->data->win_ptr, all->data->img, 0, 0);
+	mlx_put_image_to_window(all->mlx->mlx_ptr, all->mlx->win_ptr, all->data->img, 0, 0);
 	return (0);
 }
 
 int			main(void)
 {
+	t_mlx	mlx;
 	t_data	data;
+	t_data	tex_north;
+	void	*img;
 	t_var	var = {.pos_x = 22, .pos_y = 12, .dir_x = -1, .dir_y = 1, .plane_x = 0, .plane_y = 0.66, .move_speed = 0.3, .rot_speed = 0.3};
 	t_all	all;
+	int		tex_w = 64;
+	int		tex_h = 64;
 	
+	all.mlx = &mlx;
 	all.data = &data;
 	all.var = &var;
+	all.tex_north = &tex_north;
 	
-	all.data->mlx_ptr = mlx_init();
-	all.data->win_ptr = mlx_new_window(all.data->mlx_ptr, img_width, img_height, "cub3D");
-	all.data->img = mlx_new_image(all.data->mlx_ptr, img_width, img_height);
+	all.mlx->mlx_ptr = mlx_init();
+	all.mlx->win_ptr = mlx_new_window(all.mlx->mlx_ptr, img_width, img_height, "cub3D");
+	all.data->img = mlx_new_image(all.mlx->mlx_ptr, img_width, img_height);
 	all.data->addr = mlx_get_data_addr(data.img, &data.bits_per_pixel, &data.line_length, &data.endian);
-
+	all.tex_north->img = mlx_xpm_file_to_image(all.mlx->mlx_ptr, "textures/bluestone.xpm", &tex_w, &tex_h);
+	//all.tex_north->addr = mlx_get_data_addr(tex_north.img, &tex_north.bits_per_pixel, &tex_north.line_length, &tex_north.endian);
+	
+	
+	// all.tex_south->img = mlx_xpm_file_to_image(all.mlx->mlx_ptr, "textures/bluestone.xpm", tex_w, tex_h);
+	// all.tex_west->img = mlx_xpm_file_to_image(all.mlx->mlx_ptr, "textures/bluestone.xpm", tex_w, tex_h);
+	// all.tex_east->img = mlx_xpm_file_to_image(all.mlx->mlx_ptr, "textures/bluestone.xpm", tex_w, tex_h);
+	
 	ft_mlx(all);
-	mlx_put_image_to_window(all.data->mlx_ptr, all.data->win_ptr, all.data->img, 0, 0);
-	mlx_hook(all.data->win_ptr, 2, 1L<<0, key_hook, &all);
-	//mlx_key_hook(all.data->win_ptr, key_hook, &all); 
-	mlx_hook(all.data->win_ptr, 17, 1L<<0, close_func, 0); //exit on close window
+	mlx_put_image_to_window(all.mlx->mlx_ptr, all.mlx->win_ptr, all.data->img, 0, 0);
+	mlx_hook(all.mlx->win_ptr, 2, 1L<<0, key_hook, &all);
+	//mlx_key_hook(all.mlx->win_ptr, key_hook, &all); 
+	mlx_hook(all.mlx->win_ptr, 17, 1L<<0, close_func, 0); //exit on close window
 	write(1, "open\n", 5);
-	mlx_loop(all.data->mlx_ptr);
+	mlx_loop(all.mlx->mlx_ptr);
 }
