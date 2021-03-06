@@ -6,7 +6,7 @@
 /*   By: mhogg <mhogg@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/25 20:06:15 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/03 19:03:02 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/06 13:06:07 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,11 +41,11 @@ int map[map_width][map_height]=
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,2,2,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,1,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
@@ -63,14 +63,66 @@ int map[map_width][map_height]=
   {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
 };
 
-void put_texture(t_all *all)
+
+void	put_sprites(t_all all)
 {
-	int	x = 0;
-	int	y = 0;	
+	// for(int i = 0; i < all.map.num_sprites; i++)
+	// {
+	// 	all.sprites[i].distance = ((all.map.pos_x - all.sprites[i].x) * (all.map.pos_x - all.sprites[i].x) +
+	// 		(all.map.pos_y - all.sprites[i].y) * (all.map.pos_y - all.sprites[i].y));
+	// }
+	// sort_sprites(all);
 	
+	for(int i = 0; i < 1; i++)
+	{
+		double spriteX = 4 - all.var->pos_x;
+		double spriteY = 4 - all.var->pos_y;
+	printf("\nspriteX = %.2f, spriteY = %.2f ", spriteX, spriteY);
+		double invDet = 1.0 / (all.var->plane_x * all.var->dir_y - all.var->dir_x * all.var->plane_y);
+		double transformX = invDet * (all.var->dir_y * spriteX - all.var->dir_x * spriteY);
+		double transformY = invDet * (-all.var->plane_y * spriteX + all.var->plane_x * spriteY);
+	printf("x = %.2f , y = %.2f ", transformX, transformY);
+		int spriteScreenX = (int)((img_width / 2) * (1 + transformX / transformY));
+	printf("img_width = %d", img_width);
+	printf("spriteScreenX = %d ", spriteScreenX);
+		int spriteHeight = abs((int)(img_height / (transformY)));
+	printf("spriteHeight = %d ", spriteHeight);
+		int drawStartY = -spriteHeight / 2 + img_height / 2;
+		if(drawStartY < 0)
+			drawStartY = 0;
+	printf("drawStartY = %d ", drawStartY);
+		int drawEndY = spriteHeight / 2 + img_height / 2;
+		if(drawEndY >= img_height)
+			drawEndY = img_height - 1;
+	printf("drawEndY = %d ", drawEndY);
+		int spriteWidth = abs((int) (img_height / (transformY)));
+	printf("spriteWidth = %d ", spriteWidth);
+		int drawStartX = -spriteWidth / 2 + spriteScreenX;
+		if(drawStartX < 0) drawStartX = 0;
+	printf("drawStartX = %d ", drawStartX);
+		int drawEndX = spriteWidth / 2 + spriteScreenX;
+		if(drawEndX >= img_width)
+			drawEndX = img_width - 1;
+	printf("drawEndXY = %d ", drawEndX);
+		for(int stripe = drawStartX; stripe < drawEndX; stripe++)
+		{
+		int texX = (int)(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * 64 / spriteWidth) / 256;
+			if(transformY > 0 && stripe > 0 && stripe < img_width)// && transformY < all.map.every_dist[stripe])
+			{
+				for(int y = drawStartY; y < drawEndY; y++)
+				{
+					int d = (y) * 256 - img_height * 128 + spriteHeight * 128;
+					int texY = ((d * 64) / spriteHeight) / 256;
+					int color = my_mlx_pixel_take(all.sprite, texX, texY);
+					if (color)
+						my_mlx_pixel_put(all.data, stripe, y, color);
+				}
+			}
+		}
+	}
 }
 
-void		ft_mlx(t_all all)
+void	ft_mlx(t_all all)
 {
 	int x = 0;
 
@@ -215,7 +267,7 @@ void		ft_mlx(t_all all)
 			y++;
 		}
 		x++;
-	}	
+	}
 }
 
 void	rotate_right(t_all *all)
@@ -290,6 +342,7 @@ int		key_hook(int keycode, t_all *all)
 	all->data->img = mlx_new_image(all->mlx->mlx_ptr, img_width, img_height);
 	all->data->addr = mlx_get_data_addr(all->data->img, &all->data->bits_per_pixel, &all->data->line_length, &all->data->endian);
 	ft_mlx(*all);
+	put_sprites(*all);
 	mlx_put_image_to_window(all->mlx->mlx_ptr, all->mlx->win_ptr, all->data->img, 0, 0);
 	return (0);
 }
@@ -302,12 +355,16 @@ int			main(void)
 	t_data	tex_south;
 	t_data	tex_west;
 	t_data	tex_east;
+	t_data	sprite;
 	void	*img;
-	t_var	var = {.pos_x = 22, .pos_y = 12, .dir_x = -1, .dir_y = 1, .plane_x = 0, .plane_y = 0.66, .move_speed = 0.3, .rot_speed = 0.3};
+	t_var	var = {.pos_x = 5, .pos_y = 5, .dir_x = -1, .dir_y = 1, .plane_x = 0, .plane_y = 0.66, .move_speed = 0.3, .rot_speed = 0.3};
 	t_all	all;
-	int		tex_w = 64;
-	int		tex_h = 64;
+	int		tex_w;
+	int		tex_h;
+	// int		sprite_w;
+	// int		sprite_h;
 	
+	all.sprite = &sprite;
 	all.mlx = &mlx;
 	all.data = &data;
 	all.var = &var;
@@ -328,6 +385,8 @@ int			main(void)
 	all.tex_west->addr = mlx_get_data_addr(tex_west.img, &tex_west.bits_per_pixel, &tex_west.line_length, &tex_west.endian);
 	all.tex_east->img = mlx_xpm_file_to_image(all.mlx->mlx_ptr, "textures/awwhg-cbk2w.xpm", &tex_w, &tex_h);
 	all.tex_east->addr = mlx_get_data_addr(tex_east.img, &tex_east.bits_per_pixel, &tex_east.line_length, &tex_east.endian);
+	all.sprite->img = mlx_xpm_file_to_image(all.mlx->mlx_ptr, "textures/sprite.xpm", &tex_w, &tex_h);
+	all.sprite->addr = mlx_get_data_addr(sprite.img, &sprite.bits_per_pixel, &sprite.line_length, &sprite.endian);
 
 	//mlx_xpm_file_to_image(all.mlx->mlx_ptr, "textures/bluestone.xpm", tex_w, tex_h);
 	
