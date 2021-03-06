@@ -6,7 +6,7 @@
 /*   By: mhogg <mhogg@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/25 20:06:15 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/06 13:06:07 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/06 18:21:06 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,20 +63,25 @@ int map[map_width][map_height]=
   {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
 };
 
+// void	get_sprites_dist(t_all *all)
+// {
+// // printf("get_dist: %d\n", all->scene->spr_num);
+	
+// }	
 
 void	put_sprites(t_all all)
 {
-	// for(int i = 0; i < all.map.num_sprites; i++)
-	// {
-	// 	all.sprites[i].distance = ((all.map.pos_x - all.sprites[i].x) * (all.map.pos_x - all.sprites[i].x) +
-	// 		(all.map.pos_y - all.sprites[i].y) * (all.map.pos_y - all.sprites[i].y));
-	// }
-	// sort_sprites(all);
-	
-	for(int i = 0; i < 1; i++)
+	int i = -1;
+	while (++i < all.scene->spr_num)  // calculate distance
+		all.sprite[i].dist = ((all.var->pos_x - all.sprite[i].x) * (all.var->pos_x - all.sprite[i].x) +
+			(all.var->pos_y - all.sprite[i].y) * (all.var->pos_y - all.sprite[i].y));
+	//sort_sprites(all);
+	printf("put_spr: %d\n", all.scene->spr_num);
+	for(int i = 0; i < all.scene->spr_num; i++)
 	{
-		double spriteX = 4 - all.var->pos_x;
-		double spriteY = 4 - all.var->pos_y;
+		write(1, "1", 1);
+		double spriteX = all.sprite[i].x - all.var->pos_x;
+		double spriteY = all.sprite[i].y - all.var->pos_y;
 	printf("\nspriteX = %.2f, spriteY = %.2f ", spriteX, spriteY);
 		double invDet = 1.0 / (all.var->plane_x * all.var->dir_y - all.var->dir_x * all.var->plane_y);
 		double transformX = invDet * (all.var->dir_y * spriteX - all.var->dir_x * spriteY);
@@ -113,7 +118,7 @@ void	put_sprites(t_all all)
 				{
 					int d = (y) * 256 - img_height * 128 + spriteHeight * 128;
 					int texY = ((d * 64) / spriteHeight) / 256;
-					int color = my_mlx_pixel_take(all.sprite, texX, texY);
+					int color = my_mlx_pixel_take(all.sprite_img, texX, texY);
 					if (color)
 						my_mlx_pixel_put(all.data, stripe, y, color);
 				}
@@ -237,13 +242,13 @@ void	ft_mlx(t_all all)
 				{
 					if (all.var->dir_x >= 0)
 					{
-						color = my_mlx_pixel_take(all.tex_north, all.var->tex_x, all.var->tex_y);
+						color = my_mlx_pixel_take(all.texnorth_img, all.var->tex_x, all.var->tex_y);
 						my_mlx_pixel_put(all.data, x, y, color);
 					// 	my_mlx_pixel_put(all.data, x, y, 0xFF0000); // s - red
 					}
 					else	if (all.var->dir_x < 0)
 					{
-						color = my_mlx_pixel_take(all.tex_south, all.var->tex_x, all.var->tex_y);
+						color = my_mlx_pixel_take(all.texsouth_img, all.var->tex_x, all.var->tex_y);
 						my_mlx_pixel_put(all.data, x, y, color);
 					//	my_mlx_pixel_put(all.data, x, y, 0x00FF00); // n - green
 					}
@@ -252,13 +257,13 @@ void	ft_mlx(t_all all)
 				{
 					if (all.var->dir_y >= 0)
 					{
-						color = my_mlx_pixel_take(all.tex_west, all.var->tex_x, all.var->tex_y);
+						color = my_mlx_pixel_take(all.texwest_img, all.var->tex_x, all.var->tex_y);
 						my_mlx_pixel_put(all.data, x, y, color);
 						//my_mlx_pixel_put(all.data, x, y, 0x0000FF); // w - blue
 					}
 					else if (all.var->dir_y < 0)
 					{
-						color = my_mlx_pixel_take(all.tex_east, all.var->tex_x, all.var->tex_y);
+						color = my_mlx_pixel_take(all.texwest_img, all.var->tex_x, all.var->tex_y);
 						my_mlx_pixel_put(all.data, x, y, color);
 						//my_mlx_pixel_put(all.data, x, y, 0xFFFFFF);	// e - white
 					}
@@ -270,56 +275,56 @@ void	ft_mlx(t_all all)
 	}
 }
 
-void	rotate_right(t_all *all)
+void	rotate_right(t_all all)
 {
-    all->var->old_dir_x = all->var->dir_x;
-    all->var->dir_x = all->var->dir_x * cos(-all->var->rot_speed) - all->var->dir_y * sin(-all->var->rot_speed);
-    all->var->dir_y = all->var->old_dir_x * sin(-all->var->rot_speed) + all->var->dir_y * cos(-all->var->rot_speed);
-    all->var->old_plane_x = all->var->plane_x;
-    all->var->plane_x = all->var->plane_x * cos(-all->var->rot_speed) - all->var->plane_y * sin(-all->var->rot_speed);
-    all->var->plane_y = all->var->old_plane_x * sin(-all->var->rot_speed) + all->var->plane_y * cos(-all->var->rot_speed);
+    all.var->old_dir_x = all.var->dir_x;
+    all.var->dir_x = all.var->dir_x * cos(-all.var->rot_speed) - all.var->dir_y * sin(-all.var->rot_speed);
+    all.var->dir_y = all.var->old_dir_x * sin(-all.var->rot_speed) + all.var->dir_y * cos(-all.var->rot_speed);
+    all.var->old_plane_x = all.var->plane_x;
+    all.var->plane_x = all.var->plane_x * cos(-all.var->rot_speed) - all.var->plane_y * sin(-all.var->rot_speed);
+    all.var->plane_y = all.var->old_plane_x * sin(-all.var->rot_speed) + all.var->plane_y * cos(-all.var->rot_speed);
 }
 	
-void	rotate_left(t_all *all)
+void	rotate_left(t_all all)
 {
-	all->var->old_dir_x = all->var->dir_x;
-    all->var->dir_x = all->var->dir_x * cos(all->var->rot_speed) - all->var->dir_y * sin(all->var->rot_speed);
-    all->var->dir_y = all->var->old_dir_x * sin(all->var->rot_speed) + all->var->dir_y * cos(all->var->rot_speed);
-    all->var->old_plane_x = all->var->plane_x;
-    all->var->plane_x = all->var->plane_x * cos(all->var->rot_speed) - all->var->plane_y * sin(all->var->rot_speed);
-    all->var->plane_y = all->var->old_plane_x * sin(all->var->rot_speed) + all->var->plane_y * cos(all->var->rot_speed);
+	all.var->old_dir_x = all.var->dir_x;
+    all.var->dir_x = all.var->dir_x * cos(all.var->rot_speed) - all.var->dir_y * sin(all.var->rot_speed);
+    all.var->dir_y = all.var->old_dir_x * sin(all.var->rot_speed) + all.var->dir_y * cos(all.var->rot_speed);
+    all.var->old_plane_x = all.var->plane_x;
+    all.var->plane_x = all.var->plane_x * cos(all.var->rot_speed) - all.var->plane_y * sin(all.var->rot_speed);
+    all.var->plane_y = all.var->old_plane_x * sin(all.var->rot_speed) + all.var->plane_y * cos(all.var->rot_speed);
 }   
 
-void	move_left(t_all *all)
+void	move_left(t_all all)
 {
-	if(map[(int)(all->var->pos_x - all->var->dir_y * all->var->move_speed)][(int)(all->var->pos_y)] == 0)
-		all->var->pos_x -= all->var->dir_y * all->var->move_speed;
-	if(map[(int)(all->var->pos_x)][(int)(all->var->pos_y + all->var->dir_x * all->var->move_speed)] == 0)
-		all->var->pos_y += all->var->dir_x * all->var->move_speed;
+	if(map[(int)(all.var->pos_x - all.var->dir_y * all.var->move_speed)][(int)(all.var->pos_y)] == 0)
+		all.var->pos_x -= all.var->dir_y * all.var->move_speed;
+	if(map[(int)(all.var->pos_x)][(int)(all.var->pos_y + all.var->dir_x * all.var->move_speed)] == 0)
+		all.var->pos_y += all.var->dir_x * all.var->move_speed;
 }
 
-void	move_right(t_all *all)
+void	move_right(t_all all)
 {
-	if(map[(int)(all->var->pos_x + all->var->dir_y * all->var->move_speed)][(int)(all->var->pos_y)] == 0)
-		all->var->pos_x += all->var->dir_y * all->var->move_speed;
-	if(map[(int)(all->var->pos_x)][(int)(all->var->pos_y - all->var->dir_x * all->var->move_speed)] == 0)
-		all->var->pos_y -= all->var->dir_x * all->var->move_speed;
+	if(map[(int)(all.var->pos_x + all.var->dir_y * all.var->move_speed)][(int)(all.var->pos_y)] == 0)
+		all.var->pos_x += all.var->dir_y * all.var->move_speed;
+	if(map[(int)(all.var->pos_x)][(int)(all.var->pos_y - all.var->dir_x * all.var->move_speed)] == 0)
+		all.var->pos_y -= all.var->dir_x * all.var->move_speed;
 }
 
-void	move_forward(t_all *all)
+void	move_forward(t_all all)
 {
-	if(map[(int)(all->var->pos_x + all->var->dir_x * all->var->move_speed)][(int)(all->var->pos_y)] == 0)
-		all->var->pos_x += all->var->dir_x * all->var->move_speed;
-	if(map[(int)(all->var->pos_x)][(int)(all->var->pos_y + all->var->dir_y * all->var->move_speed)] == 0)
-		all->var->pos_y += all->var->dir_y * all->var->move_speed;
+	if(map[(int)(all.var->pos_x + all.var->dir_x * all.var->move_speed)][(int)(all.var->pos_y)] == 0)
+		all.var->pos_x += all.var->dir_x * all.var->move_speed;
+	if(map[(int)(all.var->pos_x)][(int)(all.var->pos_y + all.var->dir_y * all.var->move_speed)] == 0)
+		all.var->pos_y += all.var->dir_y * all.var->move_speed;
 }
 
-void	move_back(t_all *all)
+void	move_back(t_all all)
 {
-	if(map[(int)(all->var->pos_x - all->var->dir_x * all->var->move_speed)][(int)(all->var->pos_y)] == 0)
-		all->var->pos_x -= all->var->dir_x * all->var->move_speed;
-	if(map[(int)(all->var->pos_x)][(int)(all->var->pos_y - all->var->dir_y * all->var->move_speed)] == 0)
-		all->var->pos_y -= all->var->dir_y * all->var->move_speed;
+	if(map[(int)(all.var->pos_x - all.var->dir_x * all.var->move_speed)][(int)(all.var->pos_y)] == 0)
+		all.var->pos_x -= all.var->dir_x * all.var->move_speed;
+	if(map[(int)(all.var->pos_x)][(int)(all.var->pos_y - all.var->dir_y * all.var->move_speed)] == 0)
+		all.var->pos_y -= all.var->dir_y * all.var->move_speed;
 }
 
 int		key_hook(int keycode, t_all *all)
@@ -328,17 +333,17 @@ int		key_hook(int keycode, t_all *all)
 		exit(0);
 	mlx_destroy_image(all->mlx->mlx_ptr, all->data->img);
 	if (keycode == 13)
-		move_forward(all);
+		move_forward(*all);
 	if (keycode == 1)
-		move_back(all);
+		move_back(*all);
 	if (keycode == 2)
-		move_right(all);
+		move_right(*all);
 	if (keycode == 0)
-		move_left(all);
+		move_left(*all);
 	if (keycode == 123)
-		rotate_left(all);
+		rotate_left(*all);
 	if (keycode == 124)
-		rotate_right(all);
+		rotate_right(*all);
 	all->data->img = mlx_new_image(all->mlx->mlx_ptr, img_width, img_height);
 	all->data->addr = mlx_get_data_addr(all->data->img, &all->data->bits_per_pixel, &all->data->line_length, &all->data->endian);
 	ft_mlx(*all);
@@ -349,44 +354,55 @@ int		key_hook(int keycode, t_all *all)
 
 int			main(void)
 {
-	t_mlx	mlx;
-	t_data	data;
-	t_data	tex_north;
-	t_data	tex_south;
-	t_data	tex_west;
-	t_data	tex_east;
-	t_data	sprite;
-	void	*img;
-	t_var	var = {.pos_x = 5, .pos_y = 5, .dir_x = -1, .dir_y = 1, .plane_x = 0, .plane_y = 0.66, .move_speed = 0.3, .rot_speed = 0.3};
-	t_all	all;
-	int		tex_w;
-	int		tex_h;
-	// int		sprite_w;
-	// int		sprite_h;
+	t_mlx		mlx;
+	t_data		data;
+	t_data		texnorth_img;
+	t_data		texsouth_img;
+	t_data		texwest_img;
+	t_data		texeast_img;
+	t_data		sprite_img;
+	t_sprite	sprite[3];
+	t_scene		scene;
+	t_var		var = {.pos_x = 5, .pos_y = 5, .dir_x = -1, .dir_y = 1, .plane_x = 0, .plane_y = 0.66, .move_speed = 0.3, .rot_speed = 0.3};
+	t_all		all;
+	int			tex_w;
+	int			tex_h;
 	
-	all.sprite = &sprite;
+	all.sprite_img = &sprite_img;
+	all.sprite = sprite;
 	all.mlx = &mlx;
 	all.data = &data;
 	all.var = &var;
-	all.tex_north = &tex_north;
-	all.tex_south = &tex_south;
-	all.tex_west = &tex_west;
-	all.tex_east = &tex_east;
+	all.texnorth_img = &texnorth_img;
+	all.texsouth_img = &texsouth_img;
+	all.texwest_img = &texwest_img;
+	all.texeast_img = &texeast_img;
+	all.scene = &scene;
+	
+	all.scene->spr_num = 3;
+	printf("main: %d\n", all.scene->spr_num);
+	
+	all.sprite[0].x = 10;
+	all.sprite[0].y = 12;
+	all.sprite[1].x = 15;
+	all.sprite[1].y = 20;
+	all.sprite[2].x = 20;
+	all.sprite[2].y = 20;
 	
 	all.mlx->mlx_ptr = mlx_init();
 	all.mlx->win_ptr = mlx_new_window(all.mlx->mlx_ptr, img_width, img_height, "cub3D");
 	all.data->img = mlx_new_image(all.mlx->mlx_ptr, img_width, img_height);
 	all.data->addr = mlx_get_data_addr(data.img, &data.bits_per_pixel, &data.line_length, &data.endian);
-	all.tex_north->img = mlx_xpm_file_to_image(all.mlx->mlx_ptr, "textures/bluestone.xpm", &tex_w, &tex_h);
-	all.tex_north->addr = mlx_get_data_addr(tex_north.img, &tex_north.bits_per_pixel, &tex_north.line_length, &tex_north.endian);
-	all.tex_south->img = mlx_xpm_file_to_image(all.mlx->mlx_ptr, "textures/redbrick.xpm", &tex_w, &tex_h);
-	all.tex_south->addr = mlx_get_data_addr(tex_south.img, &tex_south.bits_per_pixel, &tex_south.line_length, &tex_south.endian);
-	all.tex_west->img = mlx_xpm_file_to_image(all.mlx->mlx_ptr, "textures/ahs6x-6ayyg.xpm", &tex_w, &tex_h);
-	all.tex_west->addr = mlx_get_data_addr(tex_west.img, &tex_west.bits_per_pixel, &tex_west.line_length, &tex_west.endian);
-	all.tex_east->img = mlx_xpm_file_to_image(all.mlx->mlx_ptr, "textures/awwhg-cbk2w.xpm", &tex_w, &tex_h);
-	all.tex_east->addr = mlx_get_data_addr(tex_east.img, &tex_east.bits_per_pixel, &tex_east.line_length, &tex_east.endian);
-	all.sprite->img = mlx_xpm_file_to_image(all.mlx->mlx_ptr, "textures/sprite.xpm", &tex_w, &tex_h);
-	all.sprite->addr = mlx_get_data_addr(sprite.img, &sprite.bits_per_pixel, &sprite.line_length, &sprite.endian);
+	all.texnorth_img->img = mlx_xpm_file_to_image(all.mlx->mlx_ptr, "textures/bluestone.xpm", &tex_w, &tex_h);
+	all.texnorth_img->addr = mlx_get_data_addr(texnorth_img.img, &texnorth_img.bits_per_pixel, &texnorth_img.line_length, &texnorth_img.endian);
+	all.texsouth_img->img = mlx_xpm_file_to_image(all.mlx->mlx_ptr, "textures/redbrick.xpm", &tex_w, &tex_h);
+	all.texsouth_img->addr = mlx_get_data_addr(texsouth_img.img, &texsouth_img.bits_per_pixel, &texsouth_img.line_length, &texsouth_img.endian);
+	all.texwest_img->img = mlx_xpm_file_to_image(all.mlx->mlx_ptr, "textures/ahs6x-6ayyg.xpm", &tex_w, &tex_h);
+	all.texwest_img->addr = mlx_get_data_addr(texwest_img.img, &texwest_img.bits_per_pixel, &texwest_img.line_length, &texwest_img.endian);
+	all.texeast_img->img = mlx_xpm_file_to_image(all.mlx->mlx_ptr, "textures/awwhg-cbk2w.xpm", &tex_w, &tex_h);
+	all.texeast_img->addr = mlx_get_data_addr(texeast_img.img, &texeast_img.bits_per_pixel, &texeast_img.line_length, &texeast_img.endian);
+	all.sprite_img->img = mlx_xpm_file_to_image(all.mlx->mlx_ptr, "textures/barrel.xpm", &tex_w, &tex_h);
+	all.sprite_img->addr = mlx_get_data_addr(sprite_img.img, &sprite_img.bits_per_pixel, &sprite_img.line_length, &sprite_img.endian);
 
 	//mlx_xpm_file_to_image(all.mlx->mlx_ptr, "textures/bluestone.xpm", tex_w, tex_h);
 	

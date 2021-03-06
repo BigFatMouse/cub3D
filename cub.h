@@ -14,6 +14,9 @@
 #define tex_width 64
 #define tex_height 64
 
+#define ERR_CODE_0 "Malloc error"
+#define ERR_CODE_1 "Not valid file"
+
 typedef struct  s_mlx
 {
 	void		*mlx_ptr;
@@ -29,11 +32,30 @@ typedef struct  s_data
 	int			endian;
 }               t_data;
 
-typedef	struct	s_parce
+typedef	struct	s_scene
 {
+	int			i_width;
+	int			i_height;
 	int			m_width;
 	int			m_height;
-}				t_parce;
+	int			ceill_color;
+	int			floor_color;
+	int			spr_num;
+	char		*tex_north_file;
+	char		*tex_south_file;
+	char		*tex_west_file;
+	char		*tex_east_file;
+	double		pos_x;
+	double		pos_y;
+	int			**map;
+}				t_scene;
+
+typedef struct	s_sprite
+{
+	float		x;
+	float		y;
+	float		dist;
+}				t_sprite;
 
 typedef	struct	s_var
 {
@@ -71,13 +93,15 @@ typedef	struct	s_var
 typedef struct	s_all
 {
 	t_data		*data;
-	t_data		*tex_north;
-	t_data		*tex_south;
-	t_data		*tex_west;
-	t_data		*tex_east;
+	t_data		*texnorth_img;
+	t_data		*texsouth_img;
+	t_data		*texwest_img;
+	t_data		*texeast_img;
+	t_data		*sprite_img;
 	t_mlx		*mlx;
-	t_parce		*parce;
+	t_scene		*scene;
 	t_var		*var;
+	t_sprite	*sprite;
 }				t_all;
 
 #endif
