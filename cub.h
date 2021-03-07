@@ -6,16 +6,19 @@
 #include <unistd.h>
 #include <math.h>
 #include "mlx/mlx.h"
+#include "libft/libft.h"
 
-#define img_width 640
-#define img_height 480
+//#define img_width 640
+//#define img_height 480
 #define map_width 24
 #define map_height 24
 #define tex_width 64
 #define tex_height 64
 
 #define ERR_CODE_0 "Malloc error"
-#define ERR_CODE_1 "Not valid file"
+#define ERR_CODE_1 "Запомните твари, я не сломаюсь"
+
+
 
 typedef struct  s_mlx
 {
@@ -45,10 +48,23 @@ typedef	struct	s_scene
 	char		*tex_south_file;
 	char		*tex_west_file;
 	char		*tex_east_file;
+	char		*sprite_file;
 	double		pos_x;
 	double		pos_y;
 	int			**map;
 }				t_scene;
+
+typedef struct	s_parce
+{
+	int			r;
+	int			c;
+	int			f;
+	int			s;
+	int			no;
+	int			so;
+	int 		we;
+	int			ea;
+}				t_parce;
 
 typedef struct	s_sprite
 {
@@ -67,10 +83,11 @@ typedef	struct	s_var
 	double		delta_disty;
 	double		side_distx;
 	double		side_disty;
-	double		ray_dirx;
-	double		ray_diry;
+	double		ray_dir_x;
+	double		ray_dir_y;
 	double		pos_x;
 	double		pos_y;
+	double		perp_wall_dist;
 	double		dir_x;
 	double		dir_y;
 	double		step_x;
@@ -102,6 +119,22 @@ typedef struct	s_all
 	t_scene		*scene;
 	t_var		*var;
 	t_sprite	*sprite;
+	t_parce		*flags;
 }				t_all;
+
+int				key_hook(int keycode, t_all *all);
+void			rotate_left_right(t_all all, int keycode);
+void			move_left_rigth(t_all all, int keycode);
+void			move_back_forward(t_all all, int keycode);
+void			put_sprites(t_all all);
+void			put_scene(t_all all);
+void			skip_spaces(const char **str);
+int				count_params(char const *s);
+void			parce_r(const char *line, t_all all);
+void			parce_tex(char *line, t_all all);
+void			parce_color(const char *line, t_all all);
+char			**make_map(t_list **head, int size);
+void			parcer(int fd, t_all all);
+void			struct_flags_init(t_all *all);
 
 #endif
