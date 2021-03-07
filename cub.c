@@ -6,7 +6,7 @@
 /*   By: mhogg <mhogg@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/25 20:06:15 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/08 01:03:24 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/08 01:11:25 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -349,7 +349,7 @@ void	put_scene(t_all all)
 					}
 					else if (all.var->step_y < 0)
 					{
-						color = my_mlx_pixel_take(all.texwest_img, all.var->tex_x, all.var->tex_y);
+						color = my_mlx_pixel_take(all.texeast_img, all.var->tex_x, all.var->tex_y);
 						my_mlx_pixel_put(all.data, x, y, color);
 						//my_mlx_pixel_put(all.data, x, y, 0xFFFFFF);	// e - white
 					}
