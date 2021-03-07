@@ -1,5 +1,5 @@
 NAME = cub3D
-SRC = raycaster_flat.c
+SRC = cub.c parcer.c
 HEADER = cub3d.h
 OBJ = $(SRC:%.c=%.o)
 CC = gcc
@@ -9,9 +9,11 @@ OPTIONS = -Lmlx -lmlx -framework OpenGL -framework AppKit
 
 all: $(NAME)
 	
-$(NAME): $(OBJ)
-	$(CC) $(FLAGS) $(OPTIONS) $(OBJ) -o $(NAME)
-	make -C mlx
+$(NAME): $(OBJ) 
+	make -C mlx/
+	make -C libft/
+	$(CC) $(FLAGS) $(OPTIONS) $(OBJ) libft/libft.a -o $(NAME)
+	
 
 %.o: %.c $(HEADER)
 	$(CC) $(FLAGS) -Imlx -c $< -o $@
