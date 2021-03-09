@@ -17,7 +17,9 @@
 
 #define ERR_CODE_0 "Malloc error"
 #define ERR_CODE_1 "Запомните твари, я не сломаюсь"
-
+#define ERR_CODE_2 "Resolution is invalid"
+#define ERR_CODE_3 "Texture or sprite file does not exist"
+#define ERR_CODE_4 "Color parameter is invalid"
 
 
 typedef struct  s_mlx
@@ -51,7 +53,7 @@ typedef	struct	s_scene
 	char		*sprite_file;
 	double		pos_x;
 	double		pos_y;
-	int			**map;
+	char		**map;
 }				t_scene;
 
 typedef struct	s_parce
@@ -104,7 +106,8 @@ typedef	struct	s_var
 	int			tex_x;
 	int			tex_y;
 	double		tex_pos;
-	double		step;	
+	double		step;
+	double		asp_ratio;
 }				t_var;
 
 typedef struct	s_all
@@ -136,5 +139,6 @@ void			parce_color(const char *line, t_all all);
 char			**make_map(t_list **head, int size);
 void			parcer(int fd, t_all all);
 void			struct_flags_init(t_all *all);
+void			ft_error(char *str);
 
 #endif

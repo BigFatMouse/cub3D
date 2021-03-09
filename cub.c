@@ -6,12 +6,11 @@
 /*   By: mhogg <mhogg@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/25 20:06:15 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/08 01:11:25 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/09 13:41:37 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub.h"
-
 
 int map[map_width][map_height]=
 {
@@ -67,16 +66,16 @@ void	move_left_rigth(t_all all, int keycode)
 {
 	if (keycode == 0)
 	{
-		if(map[(int)(all.var->pos_x - all.var->dir_y * all.var->move_speed)][(int)(all.var->pos_y)] == 0)
+		if(all.scene->map[(int)(all.var->pos_x - all.var->dir_y * all.var->move_speed)][(int)(all.var->pos_y)] = '0')
 			all.var->pos_x -= all.var->dir_y * all.var->move_speed;
-		if(map[(int)(all.var->pos_x)][(int)(all.var->pos_y + all.var->dir_x * all.var->move_speed)] == 0)
+		if(all.scene->map[(int)(all.var->pos_x)][(int)(all.var->pos_y + all.var->dir_x * all.var->move_speed)] = '0')
 			all.var->pos_y += all.var->dir_x * all.var->move_speed;
 	}
 	if (keycode == 2)
 	{
-		if(map[(int)(all.var->pos_x + all.var->dir_y * all.var->move_speed)][(int)(all.var->pos_y)] == 0)
+		if(all.scene->map[(int)(all.var->pos_x + all.var->dir_y * all.var->move_speed)][(int)(all.var->pos_y)] = '0')
 			all.var->pos_x += all.var->dir_y * all.var->move_speed;
-		if(map[(int)(all.var->pos_x)][(int)(all.var->pos_y - all.var->dir_x * all.var->move_speed)] == 0)
+		if(all.scene->map[(int)(all.var->pos_x)][(int)(all.var->pos_y - all.var->dir_x * all.var->move_speed)] = '0')
 			all.var->pos_y -= all.var->dir_x * all.var->move_speed;
 	}
 }
@@ -85,16 +84,16 @@ void	move_back_forward(t_all all, int keycode)
 {
 	if (keycode == 13)
 	{
-		if(map[(int)(all.var->pos_x + all.var->dir_x * all.var->move_speed)][(int)(all.var->pos_y)] == 0)
+		if(all.scene->map[(int)(all.var->pos_x + all.var->dir_x * all.var->move_speed)][(int)(all.var->pos_y)] = '0')
 			all.var->pos_x += all.var->dir_x * all.var->move_speed;
-		if(map[(int)(all.var->pos_x)][(int)(all.var->pos_y + all.var->dir_y * all.var->move_speed)] == 0)
+		if(all.scene->map[(int)(all.var->pos_x)][(int)(all.var->pos_y + all.var->dir_y * all.var->move_speed)] = '0')
 			all.var->pos_y += all.var->dir_y * all.var->move_speed;
 	}
 	if (keycode == 1)
 	{
-		if(map[(int)(all.var->pos_x - all.var->dir_x * all.var->move_speed)][(int)(all.var->pos_y)] == 0)
+		if(all.scene->map[(int)(all.var->pos_x - all.var->dir_x * all.var->move_speed)][(int)(all.var->pos_y)] = '0')
 			all.var->pos_x -= all.var->dir_x * all.var->move_speed;
-		if(map[(int)(all.var->pos_x)][(int)(all.var->pos_y - all.var->dir_y * all.var->move_speed)] == 0)
+		if(all.scene->map[(int)(all.var->pos_x)][(int)(all.var->pos_y - all.var->dir_y * all.var->move_speed)] = '0')
 			all.var->pos_y -= all.var->dir_y * all.var->move_speed;
 	}
 }
@@ -166,14 +165,14 @@ void	put_sprites(t_all all)
 		double transformX = invDet * (all.var->dir_y * spriteX - all.var->dir_x * spriteY);
 		double transformY = invDet * (-all.var->plane_y * spriteX + all.var->plane_x * spriteY);
 		int spriteScreenX = (int)((all.scene->i_width / 2) * (1 + transformX / transformY));
-		int spriteHeight = abs((int)(all.scene->i_height / (transformY)));
+		int spriteHeight = abs((int)(all.scene->i_height / transformY * all.var->asp_ratio));
 		int drawStartY = -spriteHeight / 2 + all.scene->i_height / 2;
 		if(drawStartY < 0)
 			drawStartY = 0;
 		int drawEndY = spriteHeight / 2 + all.scene->i_height / 2;
 		if(drawEndY >= all.scene->i_height)
 			drawEndY = all.scene->i_height - 1;
-		int spriteWidth = abs((int) (all.scene->i_height / (transformY)));
+		int spriteWidth = abs((int)(all.scene->i_height / transformY * all.var->asp_ratio));
 		int drawStartX = -spriteWidth / 2 + spriteScreenX;
 		if(drawStartX < 0) drawStartX = 0;
 		int drawEndX = spriteWidth / 2 + spriteScreenX;
@@ -262,7 +261,7 @@ void	perform_dda(t_all all, int x)
 				all.var->side = 1;
 			}
 			//Check if ray has hit a wall
-			if(map[all.var->map_x][all.var->map_y] > 0)			// запомните твари 
+			if(all.scene->map[all.var->map_x][all.var->map_y] == '1')			// запомните твари 
 				all.var->hit = 1;
 		}
 }
@@ -282,9 +281,9 @@ void	put_scene(t_all all)
 			all.var->perp_wall_dist = (all.var->map_x - all.var->pos_x + (1 - all.var->step_x) / 2) / all.var->ray_dir_x;
 		else
 			all.var->perp_wall_dist = (all.var->map_y - all.var->pos_y + (1 - all.var->step_y) / 2) / all.var->ray_dir_y;
-
+		all.var->asp_ratio = 0.75 * all.scene->i_width / all.scene->i_height;
       	//Calculate height of line to draw on screen
-		int lineHeight = (int)(all.scene->i_height / all.var->perp_wall_dist);
+		int lineHeight = (int)(all.scene->i_height / all.var->perp_wall_dist * all.var->asp_ratio);
 		//global->map.every_dist[x] = global->draw.perp_wall_dist;
 		//calculate lowest and highest pixel to fill in current stripe
 		all.var->draw_start = -lineHeight / 2 + all.scene->i_height / 2;
@@ -405,7 +404,7 @@ int			main(void)
 	struct_flags_init(&all);
 	parcer(fd, all);
 	printf("west: %s\n", all.scene->tex_west_file);
-	printf("east: %s\n", all.scene->tex_east_file);
+	
 	
 	all.mlx->mlx_ptr = mlx_init();
 	all.mlx->win_ptr = mlx_new_window(all.mlx->mlx_ptr, all.scene->i_width, all.scene->i_height, "cub3D");
@@ -417,12 +416,17 @@ int			main(void)
 	all.texsouth_img->addr = mlx_get_data_addr(texsouth_img.img, &texsouth_img.bits_per_pixel, &texsouth_img.line_length, &texsouth_img.endian);
 	all.texwest_img->img = mlx_xpm_file_to_image(all.mlx->mlx_ptr, all.scene->tex_west_file, &tex_w, &tex_h);
 	all.texwest_img->addr = mlx_get_data_addr(texwest_img.img, &texwest_img.bits_per_pixel, &texwest_img.line_length, &texwest_img.endian);
-	all.texeast_img->img = mlx_xpm_file_to_image(all.mlx->mlx_ptr, all.scene->tex_east_file, &tex_w, &tex_h);
+	printf("east: %s\n", all.scene->tex_east_file);
+	// if(!mlx_xpm_file_to_image(all.mlx->mlx_ptr, all.scene->tex_east_file, &tex_w, &tex_h))
+	// 	ft_error(ERR_CODE_3);
+	if(!(all.texeast_img->img = mlx_xpm_file_to_image(all.mlx->mlx_ptr, all.scene->tex_east_file, &tex_w, &tex_h)))
+		ft_error(ERR_CODE_3);
 	all.texeast_img->addr = mlx_get_data_addr(texeast_img.img, &texeast_img.bits_per_pixel, &texeast_img.line_length, &texeast_img.endian);
-	all.sprite_img->img = mlx_xpm_file_to_image(all.mlx->mlx_ptr, "textures/barrel.xpm", &tex_w, &tex_h);
+	
+	// if (!mlx_xpm_file_to_image(all.mlx->mlx_ptr, all.scene->sprite_file, &tex_w, &tex_h))
+	// 	ft_error(ERR_CODE_4);
+	all.sprite_img->img = mlx_xpm_file_to_image(all.mlx->mlx_ptr, all.scene->sprite_file, &tex_w, &tex_h);
 	all.sprite_img->addr = mlx_get_data_addr(sprite_img.img, &sprite_img.bits_per_pixel, &sprite_img.line_length, &sprite_img.endian);
-
-	//mlx_xpm_file_to_image(all.mlx->mlx_ptr, "textures/bluestone.xpm", tex_w, tex_h);
 	
 	put_scene(all);
 	mlx_put_image_to_window(all.mlx->mlx_ptr, all.mlx->win_ptr, all.data->img, 0, 0);

@@ -12,7 +12,7 @@ all: $(NAME)
 $(NAME): $(OBJ) 
 	make -C mlx/
 	make -C libft/
-	$(CC) $(FLAGS) $(OPTIONS) $(OBJ) libft/libft.a -o $(NAME)
+	$(CC) -g $(FLAGS) $(OPTIONS) $(OBJ) libft/libft.a -o $(NAME)
 	
 
 %.o: %.c $(HEADER)
@@ -20,9 +20,11 @@ $(NAME): $(OBJ)
 	
 clean:
 	rm -rf $(OBJ)
+	make clean -C libft/
 
 fclean: clean
 	rm -rf $(NAME)
+	make fclean -C libft/
 
 re: fclean all
 

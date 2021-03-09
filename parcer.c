@@ -6,7 +6,7 @@
 /*   By: mhogg <mhogg@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/04 11:11:04 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/08 00:46:07 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/09 13:42:18 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,25 @@ int	count_params(char const *s)
 	return (count);
 }
 
+int	check_params(const char *str, const char *check) //функция, которая проверяет, что в строке содержатся только символы из второй строки
+{
+	int	i;
+	i = 0;
+	int res = 0;
+	while(str[i] != '\0')
+	{
+		//printf("%c: %p\n", str[i], ft_strchr(check, str[i]));
+		if(!ft_strchr(check, str[i]))
+			res = 1;
+		i++;
+	}
+	return (res);
+}
+
 void	parce_r(const char *line, t_all all)
 {
+	if(check_params(line, "0123456789 	,") || count_params(line) != 2)
+		ft_error(ERR_CODE_2);
 	skip_spaces(&line);
 	all.scene->i_width = ft_atoi_move(&line);
 	skip_spaces(&line);
@@ -52,137 +69,149 @@ void	parce_r(const char *line, t_all all)
 
 void	parce_tex(char *line, t_all all) //проверить, что файл существует
 {
-	if (*line == 'N' && *(++line) == 'O')// && count_params(line) == 2)
-	{
-		//printf("params no: %d", count_params(line));
-		++line;
-		//skip_spaces(&line);
-		//char *str = ft_strtrim(line, " ");
-		all.scene->tex_north_file = ft_strtrim(line, " ");
-		all.flags->no++;
-	}
-	if (*line == 'S')
+	//printf("texcount: %d", count_params(line));
+	if (*line == 'S' && count_params(line) == 2)
 	{
 		line++;
 		if (*line == ' ')
 		{
 			++line;
-			//skip_spaces(&line);
-			all.scene->sprite_file = ft_strtrim(line, " ");
+			all.scene->sprite_file = ft_strtrim(line, " 	");
 			all.flags->s++;
 		}
 		if (*line == 'O')
 		{
 			++line;
-			//skip_spaces(&line);
-			all.scene->tex_south_file = ft_strtrim(line, " ");
+			all.scene->tex_south_file = ft_strtrim(line, " 	");
 			all.flags->so++;
 		}
 	}
-	if (*line == 'W' && *(++line) == 'E') // && count_params(line) == 2)
+	else if (*line == 'N' && *(++line) == 'O')
 	{
 		++line;
-		//skip_spaces(&line);
-		all.scene->tex_west_file = ft_strtrim(line, " ");
+		all.scene->tex_north_file = ft_strtrim(line, " 	");
+		all.flags->no++;
+	}
+	else if (*line == 'W' && *(++line) == 'E')
+	{
+		++line;
+		all.scene->tex_west_file = ft_strtrim(line, " 	");
 		all.flags->we++;
 	}
-	if (*line == 'E' && *(++line) == 'A')// && count_params(line) == 2)
+	else if (*line == 'E' && *(++line) == 'A')
 	{
 		++line;
-		//skip_spaces(&line);
-		all.scene->tex_east_file = ft_strtrim(line, " ");
+		all.scene->tex_east_file = ft_strtrim(line, " 	");
 		all.flags->ea++;
 	}
-	
+	else 
+		{printf("else: %s\n", line);
+		ft_error(ERR_CODE_3);
+		}
 }
 
-void	parce_color(const char *line, t_all all)
+int parce_col(const char *line, t_all all)
 {
 	int	r;
 	int	g;
 	int	b;
 	
-	if (*line == 'F') // добавить проверку на цифры
+	//if(!check_params ==)
+	skip_spaces(&line);
+	r = ft_atoi_move(&line);
+	skip_spaces(&line);
+	g = ft_atoi_move(&line);
+	skip_spaces(&line);
+	b = ft_atoi_move(&line);
+	if (r > 255 || g > 255 || b > 255)
+		ft_error(ERR_CODE_4);
+	return (r << 16 | g << 8 | b);
+}
+
+void	parce_color(const char *line, t_all all)
+{
+	
+	if (*line == 'F')
 	{
-		
-		line++;
-		skip_spaces(&line);
-		r = ft_atoi_move(&line);
-		//printf("r = %d ", r);
-		skip_spaces(&line);
-		g = ft_atoi_move(&line);
-		//printf("g = %d ", g);
-		skip_spaces(&line);
-		b = ft_atoi_move(&line);
-		//printf("b = %d ", b);
-		all.scene->floor_color = r << 16 | g << 8 | b;
+		all.scene->floor_color = parce_col(++line, all);
 		all.flags->f++;
 	}
-	
-	if (*line == 'C') // добавить проверку на цифры
+	if (*line == 'C')
 	{
-		line++;
-		skip_spaces(&line);
-		r = ft_atoi_move(&line);
-		//printf("r = %d ", r);
-		skip_spaces(&line);
-		g = ft_atoi_move(&line);
-		//printf("g = %d ", g);
-		skip_spaces(&line);
-		b = ft_atoi_move(&line);
-		//printf("b = %d ", b);
-		all.scene->ceill_color = r << 16 | g << 8 | b;
+		all.scene->ceill_color = parce_col(++line, all);
 		all.flags->c++;
 	}
 }
 
-// parce_params(char *line, t_all all)
-// {
-// 	if (*line == 'R' && count_params(line, ' ') == 3)
-// 		pars_r(++line, all);
-// 	if (*line == 'N' || *)
-// 		pars_tex_files(line, all);
-// }
+void	parce_params(char **params, t_all all)
+{
+	int		i;
+	
+	i = -1;
+	while (params[++i])
+	{
+		if (params[i][0] == 'R')
+			parce_r(++params[i], all);
+		else if (ft_strchr("FC", params[i][0]) && count_params(params[i]) == 4)
+			parce_color(params[i], all);
+		else if (ft_strchr("NSWE", params[i][0]) && count_params(params[i]) == 2)
+			parce_tex(params[i], all);
+		else if (params[i][0] == '\n' || params[i][0] == '\0')
+			;
+		else if (ft_strchr("12 ", params[i][0]))
+		{
+			all.scene->map = params + i;
+			break;
+		}
+		else
+			ft_error(ERR_CODE_1);
+	}
+}
 
 
-// int get_map_width(char **params, int i, int size, t_scene *scene)
+// void	parce_map(char **params, int i, int size, t_all all)
 // {
-// 	int	a;
-// 	int	b;
-// 	char str;
+// 	int	j;
+// 	int	m_height;
+// 	//char **map;
 	
-// 	a = 0;
-// 	while (i < size)
-// 	{
-// 		str = ft_strtrim(params[i], ' ');  // пробелы в конце мб?
-// 		if ((b = ft_strlen(str)) > a)
-// 			a = b;
-// 		i++;
-// 	}
-// 	free(str);
-// 	return (a);
+// 	j = 0;
+// 	m_height = size - i;  // посчитать размер карты - кол-во строк
+// 	printf("size = %d, i = %d, m_heigth = %d\n", size, i, m_height);
+//  //	all.scene->map = params + i;
+	// if(!(all.scene->map = malloc((m_height + 1) * sizeof(char *))))
+	// 	ft_error(ERR_CODE_0);
+	// while (i < size)
+	// {
+	// 	all.scene->map[j] = ft_strtrim(params[i], " 	");
+	// 	i++;
+	// 	j++;
+	// }
+// 	j = -1;
+// 	while (all.scene->map[++j])
+// 		ft_putendl_fd(all.scene->map[j], 1);
 // }
 
-// void	parce_map(char **params, int i, int size, t_scene *scene)
-// {
-// 	int	x;
-// 	int	y;
+void	map_check(t_all all)
+{	
+	int	i;
+	int	j;
 	
-// 	x = 0;
-// 	y = 0;
+	i = 0;
+	//проверить, что нет посторонних символов
+	while (all.scene->map[++i])
+	{
+		char c = (all.scene->map[i])[j];
+		write(1, &c, 1);
+	}
 	
-// 	// scene->map = malloc()
-// 	// while (i < size)
-// 	// {
-// 	// 	skip_spaces(&params[i]);
-// 	// 	while(params[i][j])
-// 	// 	{
-// 	// 		scene->map[x][y] = params[i][j];
-// 	// 		j++;
-// 	// 	}
-// 	// 	i++;
-// 	// }
-// }
+	//проверить, что нет пустых строк
+	//проверить, что закрыта сверху (1 или 2 или пробел)
+	//проверить, что закрыта слева (1 или 2 или пробел)
+	//проверить, что закрыта справа (1 или 2 или пробел)
+	//проверить, что закрыта снизу (1 или 2 или пробел)
+	//проверить, что вокруг нулей нет пробелов
+}
 
 char	**make_map(t_list **head, int size)  //возвращает массив строк
 {
@@ -199,52 +228,35 @@ char	**make_map(t_list **head, int size)  //возвращает массив с
 		params[++i] = tmp->content;
 		tmp = tmp->next;
 	}
-	i = -1;
-	// while (map[++i])
-	// 	ft_putendl_fd(map[i], 1);
 	return (params);
 }
 
-void	parcer(int fd, t_all all)  // 28 строк!
+void	parcer(int fd, t_all all)  // 24 строки!
 {
-	char	*line = NULL;
-	t_list	*head = NULL;
+	char	*line;
+	t_list	*head;
+	t_list	*tmp;
 	char	**params;
-	int		size;
-	int		i = -1;
+	int		i;
 
+	line = NULL;
+	head = NULL;
 	while (get_next_line(fd, &line))
 		ft_lstadd_back(&head, ft_lstnew(line));
 	ft_lstadd_back(&head, ft_lstnew(line));
-	size = ft_lstsize(head);
-	params = make_map(&head, size);
-	while (++i < size)
+	if(!(params = malloc((ft_lstsize(head) + 1) * sizeof(char *))))
+		ft_error(ERR_CODE_0);
+	i = -1;
+	tmp = head;
+	while (tmp)
 	{
-		if (params[i][0] == 'R' && count_params(params[i]) == 3)
-			parce_r(++params[i], all);
-		else if (ft_strchr("FC", params[i][0]) && count_params(params[i]) == 4)
-			parce_color(params[i], all);
-		else if (ft_strchr("NSWE", params[i][0]) && count_params(params[i]) == 2) //проверка на пробелы внутри
-			parce_tex(params[i], all);
-		else if (ft_strchr("12 ", params[i][0]))
-			i++;
-		else if (params[i][0] == '\n')
-			i++;
-		else
-			ft_error(ERR_CODE_1);
+		params[++i] = tmp->content;
+		tmp = tmp->next;
 	}
+	parce_params(params, all);
 	if(all.flags->r || all.flags->c || all.flags->f || all.flags->s || 
 	all.flags->no || all.flags->so || all.flags->we || all.flags->ea)
 		ft_error(ERR_CODE_1);
-	// printf("flag r = %d\n", all.flags->r);
-	// printf("flag c = %d\n", all.flags->c);
-	// printf("flag f = %d\n", all.flags->f);
-	// printf("flag s = %d\n", all.flags->s);
-	// printf("flag no = %d\n", all.flags->no);
-	// printf("flag so = %d\n", all.flags->so);
-	// printf("flag we = %d\n", all.flags->we);
-	// printf("flag ea = %d\n", all.flags->ea);
-
 }
 
 void	struct_flags_init(t_all *all)
@@ -273,13 +285,28 @@ void	struct_flags_init(t_all *all)
 // 	struct_flags_init(&all);
 // 	parcer(fd, all);
 	
-// 	printf("R %d %d\n", all.scene->i_width, all.scene->i_height);
+// 	printf("params:\nR %d %d\n", all.scene->i_width, all.scene->i_height);
 // 	printf("NO %s|\n", all.scene->tex_north_file);
 // 	printf("SO %s\n", all.scene->tex_south_file);
 // 	printf("WE %s\n", all.scene->tex_west_file);
 // 	printf("EA %s\n", all.scene->tex_east_file);
 // 	printf("sprite %s\n", all.scene->sprite_file);
-	
 // 	printf("floor %p\n", all.scene->floor_color);
 // 	printf("ceill %p\n", all.scene->ceill_color);
+// 	printf("map:\n");
+// 	int j = -1;
+// 	//map_check(all);
+// 	//char c = *(all.scene->map[0] + 12);
+// 	char c;
+// 	write(1, "\n", 1);
+// 	while (all.scene->map[++j])
+// 	{
+// 		int i = -1;
+// 		//c = all.scene->map[j][i];
+// 		while ((c = all.scene->map[j][++i]) != '\0')
+// 			write(1, &c, 1);
+// 		write(1, "\n", 1);
+// 	}
+// 	// 	printf("%s\n", all.scene->map[j]);
+// 	// printf("check_params: %d\n", check_params("640 -480", "0123456789 ,"));
 // }
