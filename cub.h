@@ -8,8 +8,8 @@
 #include "mlx/mlx.h"
 #include "libft/libft.h"
 
-//#define img_width 640
-//#define img_height 480
+#define img_width 640
+#define img_height 480
 #define map_width 24
 #define map_height 24
 #define tex_width 64
@@ -20,7 +20,9 @@
 #define ERR_CODE_2 "Resolution is invalid"
 #define ERR_CODE_3 "Texture or sprite file does not exist"
 #define ERR_CODE_4 "Color parameter is invalid"
-
+#define ERR_CODE_5 "Map contains forbidden symbols"
+#define ERR_CODE_6 "Map is not closed"
+#define ERR_CODE_7 "There must be one player on the map"
 
 typedef struct  s_mlx
 {
@@ -66,6 +68,7 @@ typedef struct	s_parce
 	int			so;
 	int 		we;
 	int			ea;
+	int			player;
 }				t_parce;
 
 typedef struct	s_sprite
@@ -108,6 +111,7 @@ typedef	struct	s_var
 	double		tex_pos;
 	double		step;
 	double		asp_ratio;
+	double		*z_buffer;
 }				t_var;
 
 typedef struct	s_all
@@ -133,11 +137,11 @@ void			put_sprites(t_all all);
 void			put_scene(t_all all);
 void			skip_spaces(const char **str);
 int				count_params(char const *s);
-void			parce_r(const char *line, t_all all);
-void			parce_tex(char *line, t_all all);
-void			parce_color(const char *line, t_all all);
+void			parce_r(const char *line, t_all *all);
+void			parce_tex(char *line, t_all *all);
+void			parce_color(const char *line, t_all *all);
 char			**make_map(t_list **head, int size);
-void			parcer(int fd, t_all all);
+void			parcer(int fd, t_all *all);
 void			struct_flags_init(t_all *all);
 void			ft_error(char *str);
 

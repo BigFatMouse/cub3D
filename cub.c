@@ -6,7 +6,7 @@
 /*   By: mhogg <mhogg@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/25 20:06:15 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/09 13:41:37 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/11 00:43:17 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,13 @@
 int map[map_width][map_height]=
 {
   {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,1},
   {1,0,0,0,0,0,1,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
@@ -66,16 +66,16 @@ void	move_left_rigth(t_all all, int keycode)
 {
 	if (keycode == 0)
 	{
-		if(all.scene->map[(int)(all.var->pos_x - all.var->dir_y * all.var->move_speed)][(int)(all.var->pos_y)] = '0')
+		if(all.scene->map[(int)(all.var->pos_x - all.var->dir_y * all.var->move_speed)][(int)(all.var->pos_y)] == '0')
 			all.var->pos_x -= all.var->dir_y * all.var->move_speed;
-		if(all.scene->map[(int)(all.var->pos_x)][(int)(all.var->pos_y + all.var->dir_x * all.var->move_speed)] = '0')
+		if(all.scene->map[(int)(all.var->pos_x)][(int)(all.var->pos_y + all.var->dir_x * all.var->move_speed)] == '0')
 			all.var->pos_y += all.var->dir_x * all.var->move_speed;
 	}
 	if (keycode == 2)
 	{
-		if(all.scene->map[(int)(all.var->pos_x + all.var->dir_y * all.var->move_speed)][(int)(all.var->pos_y)] = '0')
+		if(all.scene->map[(int)(all.var->pos_x + all.var->dir_y * all.var->move_speed)][(int)(all.var->pos_y)] == '0')
 			all.var->pos_x += all.var->dir_y * all.var->move_speed;
-		if(all.scene->map[(int)(all.var->pos_x)][(int)(all.var->pos_y - all.var->dir_x * all.var->move_speed)] = '0')
+		if(all.scene->map[(int)(all.var->pos_x)][(int)(all.var->pos_y - all.var->dir_x * all.var->move_speed)] == '0')
 			all.var->pos_y -= all.var->dir_x * all.var->move_speed;
 	}
 }
@@ -84,16 +84,16 @@ void	move_back_forward(t_all all, int keycode)
 {
 	if (keycode == 13)
 	{
-		if(all.scene->map[(int)(all.var->pos_x + all.var->dir_x * all.var->move_speed)][(int)(all.var->pos_y)] = '0')
+		if(all.scene->map[(int)(all.var->pos_x + all.var->dir_x * all.var->move_speed)][(int)(all.var->pos_y)] == '0')
 			all.var->pos_x += all.var->dir_x * all.var->move_speed;
-		if(all.scene->map[(int)(all.var->pos_x)][(int)(all.var->pos_y + all.var->dir_y * all.var->move_speed)] = '0')
+		if(all.scene->map[(int)(all.var->pos_x)][(int)(all.var->pos_y + all.var->dir_y * all.var->move_speed)] == '0')
 			all.var->pos_y += all.var->dir_y * all.var->move_speed;
 	}
 	if (keycode == 1)
 	{
-		if(all.scene->map[(int)(all.var->pos_x - all.var->dir_x * all.var->move_speed)][(int)(all.var->pos_y)] = '0')
+		if(all.scene->map[(int)(all.var->pos_x - all.var->dir_x * all.var->move_speed)][(int)(all.var->pos_y)] == '0')
 			all.var->pos_x -= all.var->dir_x * all.var->move_speed;
-		if(all.scene->map[(int)(all.var->pos_x)][(int)(all.var->pos_y - all.var->dir_y * all.var->move_speed)] = '0')
+		if(all.scene->map[(int)(all.var->pos_x)][(int)(all.var->pos_y - all.var->dir_y * all.var->move_speed)] == '0')
 			all.var->pos_y -= all.var->dir_y * all.var->move_speed;
 	}
 }
@@ -327,13 +327,13 @@ void	put_scene(t_all all)
 				{
 					if (all.var->step_x > 0)
 					{
-						color = my_mlx_pixel_take(all.texnorth_img, all.var->tex_x, all.var->tex_y);
+						color = my_mlx_pixel_take(all.texsouth_img, all.var->tex_x, all.var->tex_y);
 						my_mlx_pixel_put(all.data, x, y, color);
 					// 	my_mlx_pixel_put(all.data, x, y, 0xFF0000); // s - red
 					}
 					else	if (all.var->step_x < 0)
 					{
-						color = my_mlx_pixel_take(all.texsouth_img, all.var->tex_x, all.var->tex_y);
+						color = my_mlx_pixel_take(all.texnorth_img, all.var->tex_x, all.var->tex_y);
 						my_mlx_pixel_put(all.data, x, y, color);
 					//	my_mlx_pixel_put(all.data, x, y, 0x00FF00); // n - green
 					}
@@ -342,13 +342,13 @@ void	put_scene(t_all all)
 				{
 					if (all.var->step_y > 0)
 					{
-						color = my_mlx_pixel_take(all.texwest_img, all.var->tex_x, all.var->tex_y);
+						color = my_mlx_pixel_take(all.texeast_img, all.var->tex_x, all.var->tex_y);
 						my_mlx_pixel_put(all.data, x, y, color);
 						//my_mlx_pixel_put(all.data, x, y, 0x0000FF); // w - blue
 					}
 					else if (all.var->step_y < 0)
 					{
-						color = my_mlx_pixel_take(all.texeast_img, all.var->tex_x, all.var->tex_y);
+						color = my_mlx_pixel_take(all.texwest_img, all.var->tex_x, all.var->tex_y);
 						my_mlx_pixel_put(all.data, x, y, color);
 						//my_mlx_pixel_put(all.data, x, y, 0xFFFFFF);	// e - white
 					}
@@ -371,7 +371,7 @@ int			main(void)
 	t_data		texwest_img;
 	t_data		texeast_img;
 	t_data		sprite_img;
-	t_sprite	sprite[3];
+	t_sprite	*sprite;
 	t_scene		scene; // = {.i_width = 640, .i_height = 480};
 	t_parce		flags;
 	t_var		var = {.pos_x = 5, .pos_y = 5, .dir_x = -1, .dir_y = 1, .plane_x = 0, .plane_y = 0.66, .move_speed = 0.3, .rot_speed = 0.3};
@@ -391,18 +391,18 @@ int			main(void)
 	all.scene = &scene;
 	all.flags = &flags;
 	
-	all.scene->spr_num = 3;
+	// all.scene->spr_num = 3;
 	
-	all.sprite[0].x = 10;
-	all.sprite[0].y = 12;
-	all.sprite[1].x = 15;
-	all.sprite[1].y = 20;
-	all.sprite[2].x = 20;
-	all.sprite[2].y = 20;
+	// all.sprite[0].x = 2;
+	// all.sprite[0].y = 5;
+	// all.sprite[1].x = 2;
+	// all.sprite[1].y = 7;
+	// all.sprite[2].x = 2;
+	// all.sprite[2].y = 15;
 	
 	int		fd = open("scene.cub", O_RDONLY);
 	struct_flags_init(&all);
-	parcer(fd, all);
+	parcer(fd, &all);
 	printf("west: %s\n", all.scene->tex_west_file);
 	
 	
