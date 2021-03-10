@@ -6,7 +6,7 @@
 /*   By: mhogg <mhogg@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/25 20:06:15 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/11 00:43:17 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/11 01:53:39 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,7 +181,7 @@ void	put_sprites(t_all all)
 		for(int stripe = drawStartX; stripe < drawEndX; stripe++)
 		{
 		int texX = (int)(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * 64 / spriteWidth) / 256;
-			if(transformY > 0 && stripe > 0 && stripe < all.scene->i_width && transformY) // < global->map.every_dist[stripe])
+			if(transformY > 0 && stripe > 0 && stripe < all.scene->i_width && transformY < all.var->z_buffer[stripe])
 			{
 				for(int y = drawStartY; y < drawEndY; y++)
 				{
@@ -281,6 +281,7 @@ void	put_scene(t_all all)
 			all.var->perp_wall_dist = (all.var->map_x - all.var->pos_x + (1 - all.var->step_x) / 2) / all.var->ray_dir_x;
 		else
 			all.var->perp_wall_dist = (all.var->map_y - all.var->pos_y + (1 - all.var->step_y) / 2) / all.var->ray_dir_y;
+		all.var->z_buffer[x] = all.var->perp_wall_dist;
 		all.var->asp_ratio = 0.75 * all.scene->i_width / all.scene->i_height;
       	//Calculate height of line to draw on screen
 		int lineHeight = (int)(all.scene->i_height / all.var->perp_wall_dist * all.var->asp_ratio);
@@ -391,8 +392,12 @@ int			main(void)
 	all.scene = &scene;
 	all.flags = &flags;
 	
-	// all.scene->spr_num = 3;
+	//var.z_buffer = malloc()
 	
+	
+	//all->sprite = malloc(sizeof(t_sprite) * spr;
+	
+	// all.scene->spr_num = 3;
 	// all.sprite[0].x = 2;
 	// all.sprite[0].y = 5;
 	// all.sprite[1].x = 2;
@@ -404,7 +409,8 @@ int			main(void)
 	struct_flags_init(&all);
 	parcer(fd, &all);
 	printf("west: %s\n", all.scene->tex_west_file);
-	
+	all.var->z_buffer = malloc(sizeof(double) * all.scene->i_width);
+	printf("i_width = %d\n", all.scene->i_width);
 	
 	all.mlx->mlx_ptr = mlx_init();
 	all.mlx->win_ptr = mlx_new_window(all.mlx->mlx_ptr, all.scene->i_width, all.scene->i_height, "cub3D");

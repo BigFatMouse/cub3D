@@ -6,7 +6,7 @@
 /*   By: mhogg <mhogg@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/04 11:11:04 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/11 00:42:08 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/11 01:41:50 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,7 +199,8 @@ void	parce_sprite(t_all *all)
 	int i = 0;
 	int spr = all->scene->spr_num;
 	char	c;
-	all->sprite = malloc(sizeof(t_sprite) * spr);
+	if (!(all->sprite = malloc(sizeof(t_sprite) * spr)))
+		ft_error(ERR_CODE_1);
 	while (all->scene->map[++y])
 	{
 		int x = -1;

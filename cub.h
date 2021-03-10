@@ -80,6 +80,7 @@ typedef struct	s_sprite
 
 typedef	struct	s_var
 {
+	//int			i_width;
 	int			map_x;
 	int			map_y;
 	int			side;
@@ -111,7 +112,7 @@ typedef	struct	s_var
 	double		tex_pos;
 	double		step;
 	double		asp_ratio;
-	double		*z_buffer;
+	double		*z_buffer; //[640];
 }				t_var;
 
 typedef struct	s_all
