@@ -6,11 +6,11 @@
 /*   By: mhogg <mhogg@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/11 03:41:50 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/11 05:06:47 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/11 10:01:08 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub.h"
+#include "../cub.h"
 
 // void	swap_sprites(t_all all, int i, int j)
 // {

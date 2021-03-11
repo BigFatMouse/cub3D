@@ -6,11 +6,11 @@
 /*   By: mhogg <mhogg@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/11 02:46:27 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/11 02:48:19 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/11 10:00:45 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub.h"
+#include "../cub.h"
 
 unsigned int	my_mlx_pixel_take(t_data *data, int x, int y)
 {

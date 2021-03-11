@@ -1,10 +1,12 @@
 NAME = cub3D
-SRC = cub.c parcer.c keyhooks.c mlx_func.c sprites.c
 HEADER = cub.h
-OBJ = $(SRC:%.c=%.o)
 CC = gcc
 FLAGS = -Wall -Wextra -Werror 
 OPTIONS = -Lmlx -lmlx -framework OpenGL -framework AppKit
+SRC = srcs/cub.c srcs/parcer.c srcs/keyhooks.c \
+		srcs/mlx_func.c srcs/sprites.c
+OBJ = $(SRC:%.c=%.o)
+
 
 all: $(NAME)
 	
@@ -12,10 +14,10 @@ $(NAME): $(OBJ)
 	make -C mlx/
 	cp mlx/libmlx.dylib .
 	make -C libft/
-	$(CC) $(OPTIONS) $(OBJ) libft/libft.a -o $(NAME)
+	$(CC) $(FLAGS) $(OPTIONS) $(OBJ) libft/libft.a -o $(NAME)
 
-%.o: %.c $(HEADER)
-	$(CC) -Imlx -c $< -o $@
+/%.o: %.c $(HEADER)
+	$(CC) $(FLAGS) -Imlx -c $< -o $@
 	
 clean:
 	rm -rf $(OBJ)

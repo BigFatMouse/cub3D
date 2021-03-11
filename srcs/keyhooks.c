@@ -6,11 +6,11 @@
 /*   By: mhogg <mhogg@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/11 02:29:11 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/11 02:45:54 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/11 10:01:49 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub.h"
+#include "../cub.h"
 
 void	rotate_right(t_all all)
 {
