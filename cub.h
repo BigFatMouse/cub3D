@@ -73,9 +73,9 @@ typedef struct	s_parce
 
 typedef struct	s_sprite
 {
-	float		x;
-	float		y;
-	float		dist;
+	double		x;
+	double		y;
+	double		dist;
 }				t_sprite;
 
 typedef	struct	s_var
