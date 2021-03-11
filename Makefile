@@ -1,5 +1,5 @@
 NAME = cub3D
-SRC = cub.c parcer.c
+SRC = cub.c parcer.c keyhooks.c mlx_func.c sprites.c
 HEADER = cub.h
 OBJ = $(SRC:%.c=%.o)
 CC = gcc

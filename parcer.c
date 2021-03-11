@@ -6,7 +6,7 @@
 /*   By: mhogg <mhogg@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/04 11:11:04 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/11 01:41:50 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/11 04:57:07 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,6 @@ int parce_col(const char *line, t_all *all)
 	int	g;
 	int	b;
 	
-	//if(!check_params ==)
 	skip_spaces(&line);
 	r = ft_atoi_move(&line);
 	skip_spaces(&line);
@@ -200,7 +199,7 @@ void	parce_sprite(t_all *all)
 	int spr = all->scene->spr_num;
 	char	c;
 	if (!(all->sprite = malloc(sizeof(t_sprite) * spr)))
-		ft_error(ERR_CODE_1);
+		ft_error(ERR_CODE_0);
 	while (all->scene->map[++y])
 	{
 		int x = -1;
@@ -209,8 +208,8 @@ void	parce_sprite(t_all *all)
 			if (c == '2')
 			{
 				printf("x,y: %d,%d\n", x, y);
-				all->sprite[i].x = (double)y + 0.5;
-				all->sprite[i].y = (double)x + 0.5;
+				all->sprite[i].x = (double)x + 0.5;
+				all->sprite[i].y = (double)y + 0.5;
 				printf("x%d,y%d: %.2f,%.2f\n", i, i, all->sprite[i].x, all->sprite[i].y);
 				i++;
 			}

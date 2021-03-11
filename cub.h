@@ -80,11 +80,11 @@ typedef struct	s_sprite
 
 typedef	struct	s_var
 {
-	//int			i_width;
 	int			map_x;
 	int			map_y;
 	int			side;
 	int			hit;
+	int			line_height;
 	double		delta_distx;
 	double		delta_disty;
 	double		side_distx;
@@ -112,7 +112,20 @@ typedef	struct	s_var
 	double		tex_pos;
 	double		step;
 	double		asp_ratio;
-	double		*z_buffer; //[640];
+	double		*z_buffer;
+	double		transform_x;
+	double		transform_y;
+	double 		sprite_x;
+	double 		sprite_y;
+	double 		inv_det;
+	int			sprite_screen_x;
+	int			sprite_heght;
+	int			sprite_width;
+	int			draw_start_y;
+	int			draw_start_x;
+	int			draw_end_y;
+	int			draw_end_x;
+	int			stripe;
 }				t_var;
 
 typedef struct	s_all
@@ -135,6 +148,7 @@ void			rotate_left_right(t_all all, int keycode);
 void			move_left_rigth(t_all all, int keycode);
 void			move_back_forward(t_all all, int keycode);
 void			put_sprites(t_all all);
+int				close_func(void);
 void			put_scene(t_all all);
 void			skip_spaces(const char **str);
 int				count_params(char const *s);
@@ -145,5 +159,9 @@ char			**make_map(t_list **head, int size);
 void			parcer(int fd, t_all *all);
 void			struct_flags_init(t_all *all);
 void			ft_error(char *str);
+unsigned int	my_mlx_pixel_take(t_data *data, int x, int y);
+void			my_mlx_pixel_put(t_data *data, int x, int y, int color);
+int				close_func(void);
+void			put_sprites(t_all all);
 
 #endif
