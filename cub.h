@@ -23,6 +23,9 @@
 #define ERR_CODE_5 "Map contains forbidden symbols"
 #define ERR_CODE_6 "Map is not closed"
 #define ERR_CODE_7 "There must be one player on the map"
+#define ERR_CODE_8 "Can not create screenshot"
+#define ERR_CODE_9 "Put one or two argument to compile"
+#define ERR_CODE_10 "To save image enter '––save' as a second argument"
 
 typedef struct  s_mlx
 {
@@ -163,5 +166,7 @@ unsigned int	my_mlx_pixel_take(t_data *data, int x, int y);
 void			my_mlx_pixel_put(t_data *data, int x, int y, int color);
 int				close_func(void);
 void			put_sprites(t_all all);
+void			sort_sprites(t_all all);
+void			make_screenshot(t_all	all);
 
 #endif
