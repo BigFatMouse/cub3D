@@ -6,7 +6,7 @@
 /*   By: mhogg <mhogg@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/25 20:06:15 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/12 15:52:21 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/12 18:57:05 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,11 @@ void	perform_dda(t_all all, int x)
 void	texture_start(t_all all)
 {
 	double wallX;
+	int tex_width;
+	int tex_height;
+	
+	tex_height = 64;
+	tex_width = 64;
 	if (all.var->side == 0) 
 		wallX = all.var->pos_y + all.var->perp_wall_dist * all.var->ray_dir_y;
     else	wallX = all.var->pos_x + all.var->perp_wall_dist * all.var->ray_dir_x;
@@ -177,7 +182,9 @@ void	put_scene(t_all all)
 	int x;
 	int	y;
 	int color;
+	int	tex_height;
 	
+	tex_height = 64;
 	x = -1;
 	while (++x < all.scene->i_width)
     {
@@ -202,6 +209,26 @@ void	put_scene(t_all all)
 			}
 		}
 	}
+}
+
+void	parce_args(t_all all, int argc, char **argv)
+{
+	if (argc == 2)
+	{
+		
+	}
+	if (argc == 3)
+	{
+		if (!ft_strncmp(argv[2], "--save", 6))
+		{
+			all.flags->screenshot = 1;
+			ft_putendl_fd("\nImage saved", 1);
+		}
+		else
+			ft_error(ERR_CODE_10);
+	}
+	else
+		ft_error(ERR_CODE_9);
 }
 
 int		main(int argc, char **argv)
@@ -236,35 +263,17 @@ int		main(int argc, char **argv)
 	all.flags = &flags;
 
 	struct_flags_init(&all);
+	parce_args(all, argc, argv);
+	fd = open(argv[1], O_RDONLY);
+	parcer(fd, &all);
 	
-	// if (argc == 3)
-	// {
-	// 	// if (!ft_strncmp(argv[2], "--save", 6))
-	// 	// {
-	// 		fd = open(argv[1], O_RDONLY);
-	// 		parcer(fd, &all);
-	// 		put_scene(all);
-	// 		put_sprites(all);
-	// 		make_screenshot(all);
-	// 		ft_putendl_fd("\nImage saved", 1);
-	// 		exit(0);
-	// 		// }
-	// 		// else
-	// 		// ft_error(ERR_CODE_10);
-	// }
-
-	// if (argc == 2)
-	// {
-		fd = open(argv[1], O_RDONLY);
-		parcer(fd, &all);
-	//}
-	// else
-	// 	ft_error(ERR_CODE_9);
+	
 	
 	
 	if(!(all.var->z_buffer = malloc(sizeof(double) * all.scene->i_width)))
 		ft_error(ERR_CODE_0);
 	all.mlx->mlx_ptr = mlx_init();
+	check_screen_size(all);
 	all.mlx->win_ptr = mlx_new_window(all.mlx->mlx_ptr, all.scene->i_width, all.scene->i_height, "cub3D");
 	all.data->img = mlx_new_image(all.mlx->mlx_ptr, all.scene->i_width, all.scene->i_height);
 	all.data->addr = mlx_get_data_addr(data.img, &data.bits_per_pixel, &data.line_length, &data.endian);
@@ -283,10 +292,10 @@ int		main(int argc, char **argv)
 	all.sprite_img->img = mlx_xpm_file_to_image(all.mlx->mlx_ptr, all.scene->sprite_file, &width, &height);
 	all.sprite_img->addr = mlx_get_data_addr(sprite_img.img, &sprite_img.bits_per_pixel, &sprite_img.line_length, &sprite_img.endian);
 
-	check_screen_size(all);
+	//check_screen_size(all);
 	put_scene(all);
 	put_sprites(all);
-	if (argc == 3)
+	if (all.flags->screenshot == 1)
 		make_screenshot(all);
 	else
 	{

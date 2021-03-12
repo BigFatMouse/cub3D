@@ -8,12 +8,12 @@
 #include "mlx/mlx.h"
 #include "libft/libft.h"
 
-#define img_width 640
-#define img_height 480
-#define map_width 24
-#define map_height 24
-#define tex_width 64
-#define tex_height 64
+// #define img_width 640
+// #define img_height 480
+// #define map_width 24
+// #define map_height 24
+// #define tex_width 64
+// #define tex_height 64
 
 #define ERR_CODE_0 "Malloc error"
 #define ERR_CODE_1 "Запомните твари, я не сломаюсь"
@@ -26,6 +26,7 @@
 #define ERR_CODE_8 "Can not create screenshot"
 #define ERR_CODE_9 "Put one or two argument to compile"
 #define ERR_CODE_10 "To save image enter '––save' as a second argument"
+#define ERR_CODE_11 "Resolution too large to save image"
 
 typedef struct  s_mlx
 {
@@ -72,6 +73,7 @@ typedef struct	s_parce
 	int 		we;
 	int			ea;
 	int			player;
+	int			screenshot;
 }				t_parce;
 
 typedef struct	s_sprite
@@ -87,6 +89,8 @@ typedef	struct	s_var
 	int			map_y;
 	int			side;
 	int			hit;
+	// int			tex_width;
+	// int			tex_height;
 	int			line_height;
 	double		delta_distx;
 	double		delta_disty;

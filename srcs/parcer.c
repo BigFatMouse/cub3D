@@ -6,11 +6,12 @@
 /*   By: mhogg <mhogg@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/04 11:11:04 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/12 16:01:33 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/12 18:46:52 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../cub.h"
+
 
 void	skip_spaces(const char **str)
 {
@@ -50,14 +51,45 @@ int		check_params(const char *str, const char *check)
 	return (0);
 }
 
+// void	parce_r(const char *line, t_all *all)
+// {
+// 	if (check_params(line, "0123456789 	,") || count_params(line) != 2)
+// 		ft_error(ERR_CODE_2);
+// 	skip_spaces(&line);
+// 	all->scene->i_width = ft_atoi_move(&line);
+// 	skip_spaces(&line);
+// 	all->scene->i_height = ft_atoi_move(&line);
+// 	all->flags->r++;
+// }
+
+unsigned		ft_atoi_parce(const char **str, t_all *all)
+{
+	unsigned num;
+
+	num = 0;
+	if (**str == '\0')
+		return (0);
+	while (**str >= '0' && **str <= '9')
+	{
+		num = num * 10 + (**str - '0');
+		if (all->flags->screenshot == 1)
+			if (num > 16384)
+				ft_error(ERR_CODE_11);
+		if (num > 2147483647)
+				ft_error(ERR_CODE_2);
+		(*str)++;
+	}
+	return (num);
+}
+
 void	parce_r(const char *line, t_all *all)
 {
 	if (check_params(line, "0123456789 	,") || count_params(line) != 2)
 		ft_error(ERR_CODE_2);
 	skip_spaces(&line);
-	all->scene->i_width = ft_atoi_move(&line);
+	all->scene->i_width = ft_atoi_parce(&line, all);
 	skip_spaces(&line);
-	all->scene->i_height = ft_atoi_move(&line);
+	all->scene->i_height = ft_atoi_parce(&line, all);
 	all->flags->r++;
 }
 
@@ -332,4 +364,5 @@ void	struct_flags_init(t_all *all)
 	all->flags->we = -1;
 	all->flags->ea = -1;
 	all->flags->player = -1;
+	all->flags->screenshot = 0;
 }
