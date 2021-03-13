@@ -155,8 +155,8 @@ typedef struct	s_all
 
 int				key_hook(int keycode, t_all *all);
 void			rotate_left_right(t_all all, int keycode);
-void			move_left_rigth(t_all all, int keycode);
-void			move_back_forward(t_all all, int keycode);
+void			move_left_rigth(t_all *all, int keycode);
+void			move_back_forward(t_all *all, int keycode);
 void			put_sprites(t_all all);
 int				close_func(void);
 void			put_scene(t_all all);

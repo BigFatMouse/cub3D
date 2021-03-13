@@ -6,7 +6,7 @@
 /*   By: mhogg <mhogg@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/04 11:11:04 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/12 18:46:52 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/13 13:18:47 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,12 +166,15 @@ void	parce_color(const char *line, t_all *all)
 
 void	parce_player1(t_all *all, char c, int x, int y)
 {
-	all->scene->pos_x = (double)y + 0.5;
-	all->scene->pos_y = (double)x + 0.5;
-	printf("parcer0 pos_x = %.2f, pos_y = %.2f\n", all->scene->pos_x, all->scene->pos_x);
-	
+	// all->scene->pos_x = (double)y + 0.5;
+	// all->scene->pos_y = (double)x + 0.5;
+	all->var->pos_x = (float)y + 0.5;
+	all->var->pos_y = (float)x + 0.5;
+	// printf("parcer scene.pos_x = %.2f, pos_y = %.2f\n", all->scene->pos_x, all->scene->pos_x);
+	// printf("parcer var.pos_x = %.2f, pos_y = %.2f\n", all->var->pos_x, all->var->pos_x);
+
 	all->flags->player++;
-	all->scene->map[x][y] = '0';
+	all->scene->map[y][x] = '0';
 	if (c == 'N')
 	{
 		all->var->dir_x = -1;
@@ -191,7 +194,7 @@ void	parce_player1(t_all *all, char c, int x, int y)
 void	parce_player(t_all *all, char c, int x, int y)
 {
 	parce_player1(all, c, x, y);
-	printf("parcer1 pos_x = %.2f, pos_y = %.2f\n", all->scene->pos_x, all->scene->pos_x);
+	//printf("parcer1 pos_x = %.2f, pos_y = %.2f\n", all->scene->pos_x, all->scene->pos_x);
 
 	if (c == 'W')
 	{

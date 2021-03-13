@@ -6,7 +6,7 @@
 /*   By: mhogg <mhogg@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/25 20:06:15 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/13 12:11:14 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/13 13:28:20 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,6 +237,7 @@ void	parce_args(t_all *all, int argc, char **argv)
 	}
 	else
 		ft_error(ERR_CODE_9);
+	printf("eto x [%fd] eto y [%fd]\n", all->var->pos_x, all->var->pos_y);
 	
 }
 
@@ -328,7 +329,7 @@ int		main(int argc, char **argv)
 	t_sprite	*sprite;
 	t_scene		scene;
 	t_parce		flags;
-	t_var		var = {.pos_x = 4.5, .pos_y = 4.5, .dir_x = -1, .dir_y = 1, .plane_x = 0, .plane_y = 0.66, .move_speed = 0.3, .rot_speed = 0.3};
+	t_var		var = {/*.pos_x = 2.5, .pos_y = 2.5, .dir_x = -1, .dir_y = 1, .plane_x = 0, .plane_y = 0.66,*/ .move_speed = 0.3, .rot_speed = 0.3};
 	t_all		all;
 	
 	all.sprite_img = &sprite_img;
@@ -341,7 +342,7 @@ int		main(int argc, char **argv)
 	all.texwest_img = &texwest_img;
 	all.texeast_img = &texeast_img;
 	all.scene = &scene;
-	all.flags = &flags; //23
+	all.flags = &flags; 
 	parce_args(&all, argc, argv);
-	draw_all(all);
+	draw_all(all); //26
 }
