@@ -6,7 +6,7 @@
 /*   By: mhogg <mhogg@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/25 20:06:15 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/12 18:57:05 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/13 10:18:00 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -213,19 +213,24 @@ void	put_scene(t_all all)
 
 void	parce_args(t_all all, int argc, char **argv)
 {
-	if (argc == 2)
+	int len;
+	
+	len = ft_strlen(argv[1]);
+	
+	if (argc == 2 || argc == 3)
 	{
-		
-	}
-	if (argc == 3)
-	{
-		if (!ft_strncmp(argv[2], "--save", 6))
+		if ((ft_strnstr(argv[1], ".cub", len)) != argv[1] + len - 4)
+			ft_error(ERR_CODE_12);
+		if (argc == 3)	
 		{
-			all.flags->screenshot = 1;
-			ft_putendl_fd("\nImage saved", 1);
+			if (!ft_strncmp(argv[2], "--save", 6))
+			{
+				all.flags->screenshot = 1;
+				ft_putendl_fd("\nImage saved", 1);
+			}
+			else
+				ft_error(ERR_CODE_10);
 		}
-		else
-			ft_error(ERR_CODE_10);
 	}
 	else
 		ft_error(ERR_CODE_9);
@@ -262,10 +267,13 @@ int		main(int argc, char **argv)
 	all.scene = &scene;
 	all.flags = &flags;
 
+	if ((fd = open(argv[1], O_RDONLY)) < 0)
+		ft_error(ERR_CODE_13);
 	struct_flags_init(&all);
 	parce_args(all, argc, argv);
-	fd = open(argv[1], O_RDONLY);
 	parcer(fd, &all);
+	
+	printf("fd = %d\n", fd);
 	
 	
 	
@@ -292,11 +300,14 @@ int		main(int argc, char **argv)
 	all.sprite_img->img = mlx_xpm_file_to_image(all.mlx->mlx_ptr, all.scene->sprite_file, &width, &height);
 	all.sprite_img->addr = mlx_get_data_addr(sprite_img.img, &sprite_img.bits_per_pixel, &sprite_img.line_length, &sprite_img.endian);
 
-	//check_screen_size(all);
+	check_screen_size(all);
 	put_scene(all);
 	put_sprites(all);
 	if (all.flags->screenshot == 1)
+	{
 		make_screenshot(all);
+		ft_putendl_fd("\nImage saved", 1);
+	}
 	else
 	{
 	mlx_put_image_to_window(all.mlx->mlx_ptr, all.mlx->win_ptr, all.data->img, 0, 0);

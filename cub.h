@@ -27,6 +27,9 @@
 #define ERR_CODE_9 "Put one or two argument to compile"
 #define ERR_CODE_10 "To save image enter '––save' as a second argument"
 #define ERR_CODE_11 "Resolution too large to save image"
+#define ERR_CODE_12 "Scene file is invalid"
+#define ERR_CODE_13 "Can't open scene file"
+
 
 typedef struct  s_mlx
 {
