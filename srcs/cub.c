@@ -6,7 +6,7 @@
 /*   By: mhogg <mhogg@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/25 20:06:15 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/13 10:18:00 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/13 12:11:14 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,12 +211,13 @@ void	put_scene(t_all all)
 	}
 }
 
-void	parce_args(t_all all, int argc, char **argv)
+void	parce_args(t_all *all, int argc, char **argv)
 {
 	int len;
+	int	fd;
 	
+	struct_flags_init(all);
 	len = ft_strlen(argv[1]);
-	
 	if (argc == 2 || argc == 3)
 	{
 		if ((ft_strnstr(argv[1], ".cub", len)) != argv[1] + len - 4)
@@ -225,21 +226,98 @@ void	parce_args(t_all all, int argc, char **argv)
 		{
 			if (!ft_strncmp(argv[2], "--save", 6))
 			{
-				all.flags->screenshot = 1;
+				all->flags->screenshot = 1;
 				ft_putendl_fd("\nImage saved", 1);
 			}
 			else
 				ft_error(ERR_CODE_10);
 		}
+		fd = open(argv[1], O_RDONLY);
+		parcer(fd, all);
 	}
 	else
 		ft_error(ERR_CODE_9);
+	
+}
+
+void all_mlx2(t_all *all)
+{
+	int			width;
+	int			height;
+	
+	if(!(all->texwest_img->img = mlx_xpm_file_to_image(all->mlx->mlx_ptr, 
+			all->scene->tex_west_file, &width, &height)))
+		ft_error(ERR_CODE_3);
+	all->texwest_img->addr = mlx_get_data_addr(all->texwest_img->img, 
+			&all->texwest_img->bits_per_pixel, &all->texwest_img->line_length, 
+			&all->texwest_img->endian);
+	if(!(all->texeast_img->img = mlx_xpm_file_to_image(all->mlx->mlx_ptr, 
+			all->scene->tex_east_file, &width, &height)))
+		ft_error(ERR_CODE_3);
+	all->texeast_img->addr = mlx_get_data_addr(all->texeast_img->img,
+			&all->texeast_img->bits_per_pixel, &all->texeast_img->line_length, 
+			&all->texeast_img->endian);
+	all->sprite_img->img = mlx_xpm_file_to_image(all->mlx->mlx_ptr,
+			all->scene->sprite_file, &width, &height);
+	all->sprite_img->addr = mlx_get_data_addr(all->sprite_img->img, 
+			&all->sprite_img->bits_per_pixel, &all->sprite_img->line_length, 
+			&all->sprite_img->endian);
+}
+
+void	all_mlx(t_all *all)
+{
+	int			width;
+	int			height;
+
+	all->mlx->win_ptr = mlx_new_window(all->mlx->mlx_ptr, all->scene->i_width,
+			all->scene->i_height, "cub3D");
+	all->data->img = mlx_new_image(all->mlx->mlx_ptr, all->scene->i_width,
+			all->scene->i_height);
+	all->data->addr = mlx_get_data_addr(all->data->img, &all->data->bits_per_pixel, 
+			&all->data->line_length, &all->data->endian);
+	if(!(all->texnorth_img->img = mlx_xpm_file_to_image(all->mlx->mlx_ptr,
+			all->scene->tex_north_file, &width, &height)))
+		ft_error(ERR_CODE_3);
+	all->texnorth_img->addr = mlx_get_data_addr(all->texnorth_img->img,
+			&all->texnorth_img->bits_per_pixel, &all->texnorth_img->line_length, 
+			&all->texnorth_img->endian);
+	if(!(all->texsouth_img->img = mlx_xpm_file_to_image(all->mlx->mlx_ptr, 
+			all->scene->tex_south_file, &width, &height)))
+		ft_error(ERR_CODE_3);
+	all->texsouth_img->addr = mlx_get_data_addr(all->texsouth_img->img, 
+			&all->texsouth_img->bits_per_pixel, &all->texsouth_img->line_length, 
+			&all->texsouth_img->endian);
+	all_mlx2(all);
+	
+}
+
+void	draw_all (t_all all)
+{
+	if(!(all.var->z_buffer = malloc(sizeof(double) * all.scene->i_width)))
+		ft_error(ERR_CODE_0);
+	all.mlx->mlx_ptr = mlx_init();
+	check_screen_size(all);
+	all_mlx(&all);
+	check_screen_size(all);
+	put_scene(all);
+	put_sprites(all);
+	if (all.flags->screenshot == 1)
+	{
+		make_screenshot(all);
+		ft_putendl_fd("\nImage saved", 1);
+	}
+	else
+	{
+		mlx_put_image_to_window(all.mlx->mlx_ptr, all.mlx->win_ptr, all.data->img, 0, 0);
+		mlx_hook(all.mlx->win_ptr, 2, 1L<<0, key_hook, &all);
+		mlx_hook(all.mlx->win_ptr, 17, 1L<<0, close_func, 0);
+		ft_putendl_fd("\nOpen", 1);
+		mlx_loop(all.mlx->mlx_ptr);
+	}
 }
 
 int		main(int argc, char **argv)
 {
-	int			fd;
-	
 	t_mlx		mlx;
 	t_data		data;
 	t_data		texnorth_img;
@@ -252,8 +330,6 @@ int		main(int argc, char **argv)
 	t_parce		flags;
 	t_var		var = {.pos_x = 4.5, .pos_y = 4.5, .dir_x = -1, .dir_y = 1, .plane_x = 0, .plane_y = 0.66, .move_speed = 0.3, .rot_speed = 0.3};
 	t_all		all;
-	int			width;
-	int			height;
 	
 	all.sprite_img = &sprite_img;
 	all.sprite = sprite;
@@ -265,55 +341,7 @@ int		main(int argc, char **argv)
 	all.texwest_img = &texwest_img;
 	all.texeast_img = &texeast_img;
 	all.scene = &scene;
-	all.flags = &flags;
-
-	if ((fd = open(argv[1], O_RDONLY)) < 0)
-		ft_error(ERR_CODE_13);
-	struct_flags_init(&all);
-	parce_args(all, argc, argv);
-	parcer(fd, &all);
-	
-	printf("fd = %d\n", fd);
-	
-	
-	
-	
-	if(!(all.var->z_buffer = malloc(sizeof(double) * all.scene->i_width)))
-		ft_error(ERR_CODE_0);
-	all.mlx->mlx_ptr = mlx_init();
-	check_screen_size(all);
-	all.mlx->win_ptr = mlx_new_window(all.mlx->mlx_ptr, all.scene->i_width, all.scene->i_height, "cub3D");
-	all.data->img = mlx_new_image(all.mlx->mlx_ptr, all.scene->i_width, all.scene->i_height);
-	all.data->addr = mlx_get_data_addr(data.img, &data.bits_per_pixel, &data.line_length, &data.endian);
-	if(!(all.texnorth_img->img = mlx_xpm_file_to_image(all.mlx->mlx_ptr, all.scene->tex_north_file, &width, &height)))
-		ft_error(ERR_CODE_3);
-	all.texnorth_img->addr = mlx_get_data_addr(texnorth_img.img, &texnorth_img.bits_per_pixel, &texnorth_img.line_length, &texnorth_img.endian);
-	if(!(all.texsouth_img->img = mlx_xpm_file_to_image(all.mlx->mlx_ptr, all.scene->tex_south_file, &width, &height)))
-		ft_error(ERR_CODE_3);
-	all.texsouth_img->addr = mlx_get_data_addr(texsouth_img.img, &texsouth_img.bits_per_pixel, &texsouth_img.line_length, &texsouth_img.endian);
-	if(!(all.texwest_img->img = mlx_xpm_file_to_image(all.mlx->mlx_ptr, all.scene->tex_west_file, &width, &height)))
-		ft_error(ERR_CODE_3);
-	all.texwest_img->addr = mlx_get_data_addr(texwest_img.img, &texwest_img.bits_per_pixel, &texwest_img.line_length, &texwest_img.endian);
-	if(!(all.texeast_img->img = mlx_xpm_file_to_image(all.mlx->mlx_ptr, all.scene->tex_east_file, &width, &height)))
-		ft_error(ERR_CODE_3);
-	all.texeast_img->addr = mlx_get_data_addr(texeast_img.img, &texeast_img.bits_per_pixel, &texeast_img.line_length, &texeast_img.endian);
-	all.sprite_img->img = mlx_xpm_file_to_image(all.mlx->mlx_ptr, all.scene->sprite_file, &width, &height);
-	all.sprite_img->addr = mlx_get_data_addr(sprite_img.img, &sprite_img.bits_per_pixel, &sprite_img.line_length, &sprite_img.endian);
-
-	check_screen_size(all);
-	put_scene(all);
-	put_sprites(all);
-	if (all.flags->screenshot == 1)
-	{
-		make_screenshot(all);
-		ft_putendl_fd("\nImage saved", 1);
-	}
-	else
-	{
-	mlx_put_image_to_window(all.mlx->mlx_ptr, all.mlx->win_ptr, all.data->img, 0, 0);
-	mlx_hook(all.mlx->win_ptr, 2, 1L<<0, key_hook, &all);
-	mlx_hook(all.mlx->win_ptr, 17, 1L<<0, close_func, 0);
-	ft_putendl_fd("\nOpen", 1);
-	mlx_loop(all.mlx->mlx_ptr);
-	}
+	all.flags = &flags; //23
+	parce_args(&all, argc, argv);
+	draw_all(all);
 }
