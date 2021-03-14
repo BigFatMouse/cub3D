@@ -3,9 +3,11 @@ HEADER = cub.h
 CC = gcc
 FLAGS = -Wall -Wextra -Werror 
 OPTIONS = -Lmlx -lmlx -framework OpenGL -framework AppKit
-SRC = srcs/cub.c srcs/parcer.c srcs/keyhooks.c \
+SRC =  srcs/parser1.c srcs/pars_funcs.c srcs/parcer.c \
+	srcs/cub.c \
+	srcs/keyhooks.c srcs/screenshot.c \
 	srcs/mlx_func.c srcs/put_sprites.c srcs/sort_sprites.c \
-	srcs/screenshot.c
+	
 OBJ = $(SRC:%.c=%.o)
 
 

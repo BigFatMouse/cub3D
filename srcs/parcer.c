@@ -6,70 +6,11 @@
 /*   By: mhogg <mhogg@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/04 11:11:04 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/14 15:24:14 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/14 18:10:14 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../cub.h"
-
-
-void	skip_spaces(const char **str)
-{
-	while (**str == ' ' || **str == '\t' || **str == ',')
-		(*str)++;
-}
-
-int		count_params(char const *s)
-{
-	int	i;
-	int	count;
-
-	i = 0;
-	count = 0;
-	while (s[i])
-	{
-		if ((s[i] != ' ' && s[i] != ',' && s[i] != '\t') &&
-			(s[i + 1] == ' ' || s[i + 1] == ',' || s[i] == '\t'
-			|| s[i + 1] == '\0'))
-			count++;
-		i++;
-	}
-	return (count);
-}
-
-int		check_params(const char *str, const char *check)
-{
-	int	i;
-
-	i = 0;
-	while (str[i] != '\0')
-	{
-		if (!ft_strchr(check, str[i]))
-			return (1);
-		i++;
-	}
-	return (0);
-}
-
-unsigned		ft_atoi_parce(const char **str, t_all *all)
-{
-	unsigned num;
-
-	num = 0;
-	if (**str == '\0')
-		return (0);
-	while (**str >= '0' && **str <= '9')
-	{
-		num = num * 10 + (**str - '0');
-		if (all->flags->screenshot == 1)
-			if (num > 16384)
-				ft_error(ERR_CODE_11);
-		if (num > 2147483647)
-				ft_error(ERR_CODE_2);
-		(*str)++;
-	}
-	return (num);
-}
 
 void	parce_r(const char *line, t_all *all)
 {
@@ -264,97 +205,15 @@ void	parce_map(t_all *all)
 	parce_sprite(all);
 }
 
-int check_extension(char *name, char *ext)
-{
-	int	len;
+// int check_extension(char *name, char *ext)
+// {
+// 	int	len;
 
-	len = ft_strlen(name);
-	if (((ft_strnstr(name, ext, len)) != name + len - 4) || len <= 4)
-		return(1);
-	return (0);
-}
+// 	len = ft_strlen(name);
+// 	if (((ft_strnstr(name, ext, len)) != name + len - 4) || len <= 4)
+// 		return(1);
+// 	return (0);
+// }
 
-void	parce_params(char **params, t_all *all, int size)
-{
-	int	i;
-	
-	i = -1;
-	while (params[++i])
-	{
-		if (params[i][0] == 'R')
-			parce_r(++params[i], all);
-		else if (ft_strchr("FC", params[i][0]) && count_params(params[i]) == 4)
-			parce_color(params[i], all);
-		else if (params[i][0] == 'S' && count_params(params[i]) == 2)
-			parce_s(++params[i], all);
-		else if (ft_strchr("NWE", params[i][0]) && count_params(params[i]) == 2)
-			parce_nwe(params[i], all);
-		else if (params[i][0] == '\n' || params[i][0] == '\0')
-			;
-		else if (ft_strchr("1 ", params[i][0]))
-		{
-			all->scene->map = params + i;
-			all->scene->m_width = size - i;
-			parce_map(all);
-			break ;
-		}
-		else
-			ft_error(ERR_CODE_1);
-	}
-}
 
-char	**make_map(t_list **head, int size)
-{
-	char	**params;
-	int		i;
-	t_list	*tmp;
 
-	if (!(params = malloc((size + 1) * sizeof(char *))))
-		ft_error(ERR_CODE_0);
-	i = -1;
-	tmp = *head;
-	while (tmp)
-	{
-		params[++i] = ft_strdup(tmp->content);
-		tmp = tmp->next;
-	}
-	ft_lstclear(head, free);
-	return (params);
-}
-
-void	parcer(int fd, t_all *all)
-{
-	char	*line;
-	t_list	*head;
-	t_list	*tmp;
-	char	**params;
-	int		i;
-	int		size;
-
-	size = 0;
-	line = NULL;
-	head = NULL;
-	while (get_next_line(fd, &line))
-		ft_lstadd_back(&head, ft_lstnew(line));
-	ft_lstadd_back(&head, ft_lstnew(line));
-	params = make_map(&head, ft_lstsize(head));
-	ft_lstclear(&head, free);
-	parce_params(params, all, size);
-	if (all->flags->r || all->flags->c || all->flags->f || all->flags->s ||
-	all->flags->no || all->flags->so || all->flags->we || all->flags->ea)
-		ft_error(ERR_CODE_1);
-}
-
-void	struct_flags_init(t_all *all)
-{
-	all->flags->r = -1;
-	all->flags->c = -1;
-	all->flags->f = -1;
-	all->flags->s = -1;
-	all->flags->no = -1;
-	all->flags->so = -1;
-	all->flags->we = -1;
-	all->flags->ea = -1;
-	all->flags->player = -1;
-	all->flags->screenshot = 0;
-}

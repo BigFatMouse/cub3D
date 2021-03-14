@@ -8,15 +8,8 @@
 #include "mlx/mlx.h"
 #include "libft/libft.h"
 
-// #define img_width 640
-// #define img_height 480
-// #define map_width 24
-// #define map_height 24
-// #define tex_width 64
-// #define tex_height 64
-
 #define ERR_CODE_0 "Error\nMalloc error"
-#define ERR_CODE_1 "Error\nЗапомните твари, я не сломаюсь"
+#define ERR_CODE_1 "Error\nTexture or sprite file is invalid"
 #define ERR_CODE_2 "Error\nResolution is invalid"
 #define ERR_CODE_3 "Error\nTexture or sprite file does not exist"
 #define ERR_CODE_4 "Error\nColor parameter is invalid"
@@ -29,8 +22,9 @@
 #define ERR_CODE_11 "Error\nResolution too large to save image"
 #define ERR_CODE_12 "Error\nScene file is invalid"
 #define ERR_CODE_13 "Error\nCan't open scene file"
-#define ERR_CODE_14 "Error\nTexture file must hav .xpm"
-
+#define ERR_CODE_14 "Error\nTexture file must have .xpm extension"
+#define ERR_CODE_15 "Error\nNo map"
+#define ERR_CODE_16 "Error\nCan't read file"
 
 typedef struct  s_mlx
 {
@@ -78,6 +72,7 @@ typedef struct	s_parce
 	int			ea;
 	int			player;
 	int			screenshot;
+	int			map;
 }				t_parce;
 
 typedef struct	s_sprite
@@ -161,12 +156,21 @@ int				close_func(void);
 void			put_scene(t_all all);
 void			skip_spaces(const char **str);
 int				count_params(char const *s);
+int				check_params(const char *str, const char *check);
 void			parce_r(const char *line, t_all *all);
 void			parce_tex(char *line, t_all *all);
 void			parce_color(const char *line, t_all *all);
+unsigned		ft_atoi_parce(const char **str, t_all *all);
 char			**make_map(t_list **head, int size);
 void			parcer(int fd, t_all *all);
-void			struct_flags_init(t_all *all);
+void			parce_r(const char *line, t_all *all);
+void			parce_s(char *line, t_all *all);
+void			parce_nwe(char *line, t_all *all);
+int				parce_col(const char *line, t_all *all);
+void			parce_color(const char *line, t_all *all);
+void			parce_player(t_all *all, char c, int x, int y);
+void			parce_map(t_all *all);
+void			struct_init(t_all *all);
 void			ft_error(char *str);
 unsigned int	my_mlx_pixel_take(t_data *data, int x, int y);
 void			my_mlx_pixel_put(t_data *data, int x, int y, int color);
@@ -175,5 +179,6 @@ void			put_sprites(t_all all);
 void			sort_sprites(t_all all);
 void			make_screenshot(t_all	all);
 int 			check_extension(char *name, char *ext);
+void			parce_args(t_all *all, int argc, char **argv);
 
 #endif

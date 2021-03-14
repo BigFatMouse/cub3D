@@ -6,7 +6,7 @@
 /*   By: mhogg <mhogg@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/25 20:06:15 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/14 13:51:27 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/14 18:35:14 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,23 @@ void	ft_error(char *str)
 {
 	ft_putendl_fd(str, 2);
 	exit(1);
+}
+
+void	struct_init(t_all *all)
+{
+	all->flags->r = -1;
+	all->flags->c = -1;
+	all->flags->f = -1;
+	all->flags->s = -1;
+	all->flags->no = -1;
+	all->flags->so = -1;
+	all->flags->we = -1;
+	all->flags->ea = -1;
+	all->flags->player = -1;
+	all->flags->map = -1;
+	all->flags->screenshot = 0;
+	all->var->move_speed = 0.3;
+	all->var->rot_speed = 0.3;
 }
 
 void		check_screen_size(t_all all)
@@ -209,34 +226,34 @@ void	put_scene(t_all all)
 	}
 }
 
-void	parce_args(t_all *all, int argc, char **argv)
-{
-	int	fd;
+// void	parce_args(t_all *all, int argc, char **argv)
+// {
+// 	int	fd;
 	
-	struct_flags_init(all);
-	if (argc == 2 || argc == 3)
-	{
-		if (argc == 3)	
-		{
-			if (!ft_strncmp(argv[2], "--save", 6))
-			{
-				all->flags->screenshot = 1;
-				ft_putendl_fd("\nImage saved", 1);
-			}
-			else
-				ft_error(ERR_CODE_10);
-		}
-		fd = open(argv[1], O_RDONLY);
-		if (fd < 0)
-			ft_error(ERR_CODE_13);
+// 	struct_flags_init(all);
+// 	if (argc == 2 || argc == 3)
+// 	{
+// 		if (argc == 3)	
+// 		{
+// 			if (!ft_strncmp(argv[2], "--save", 6))
+// 			{
+// 				all->flags->screenshot = 1;
+// 				ft_putendl_fd("\nImage saved", 1);
+// 			}
+// 			else
+// 				ft_error(ERR_CODE_10);
+// 		}
+// 		fd = open(argv[1], O_RDONLY);
+// 		if (fd < 0)
+// 			ft_error(ERR_CODE_13);
 		
-		if (check_extension(argv[1], ".cub"))
-			ft_error(ERR_CODE_12);
-		parcer(fd, all);
-	}
-	else
-		ft_error(ERR_CODE_9);
-}
+// 		if (check_extension(argv[1], ".cub"))
+// 			ft_error(ERR_CODE_12);
+// 		parcer(fd, all);
+// 	}
+// 	else
+// 		ft_error(ERR_CODE_9);
+// }
 
 void all_mlx2(t_all *all)
 {
@@ -316,6 +333,7 @@ void	draw_all (t_all all)
 
 int		main(int argc, char **argv)
 {
+	t_all		all;
 	t_mlx		mlx;
 	t_data		data;
 	t_data		texnorth_img;
@@ -323,14 +341,11 @@ int		main(int argc, char **argv)
 	t_data		texwest_img;
 	t_data		texeast_img;
 	t_data		sprite_img;
-	t_sprite	*sprite;
 	t_scene		scene;
 	t_parce		flags;
-	t_var		var = {/*.pos_x = 2.5, .pos_y = 2.5, .dir_x = -1, .dir_y = 1, .plane_x = 0, .plane_y = 0.66,*/ .move_speed = 0.3, .rot_speed = 0.3};
-	t_all		all;
+	t_var		var; 
 	
 	all.sprite_img = &sprite_img;
-	all.sprite = sprite;
 	all.mlx = &mlx;
 	all.data = &data;
 	all.var = &var;
@@ -340,6 +355,7 @@ int		main(int argc, char **argv)
 	all.texeast_img = &texeast_img;
 	all.scene = &scene;
 	all.flags = &flags; 
+	struct_init(&all);
 	parce_args(&all, argc, argv);
-	draw_all(all); //26
+	draw_all(all); //25!
 }
