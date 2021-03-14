@@ -6,7 +6,7 @@
 /*   By: mhogg <mhogg@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/25 20:06:15 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/13 13:28:20 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/14 13:51:27 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ int		close_func(void)
 
 void	ft_error(char *str)
 {
-	write(2, "/n", 1);
 	ft_putendl_fd(str, 2);
 	exit(1);
 }
@@ -35,7 +34,6 @@ void		check_screen_size(t_all all)
 	if (all.scene->i_height > max_height)
 		all.scene->i_height = max_height;
 }
-
 
 void	calculate_ray(t_all all, int x)
 {
@@ -213,15 +211,11 @@ void	put_scene(t_all all)
 
 void	parce_args(t_all *all, int argc, char **argv)
 {
-	int len;
 	int	fd;
 	
 	struct_flags_init(all);
-	len = ft_strlen(argv[1]);
 	if (argc == 2 || argc == 3)
 	{
-		if ((ft_strnstr(argv[1], ".cub", len)) != argv[1] + len - 4)
-			ft_error(ERR_CODE_12);
 		if (argc == 3)	
 		{
 			if (!ft_strncmp(argv[2], "--save", 6))
@@ -233,12 +227,15 @@ void	parce_args(t_all *all, int argc, char **argv)
 				ft_error(ERR_CODE_10);
 		}
 		fd = open(argv[1], O_RDONLY);
+		if (fd < 0)
+			ft_error(ERR_CODE_13);
+		
+		if (check_extension(argv[1], ".cub"))
+			ft_error(ERR_CODE_12);
 		parcer(fd, all);
 	}
 	else
 		ft_error(ERR_CODE_9);
-	printf("eto x [%fd] eto y [%fd]\n", all->var->pos_x, all->var->pos_y);
-	
 }
 
 void all_mlx2(t_all *all)

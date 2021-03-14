@@ -6,7 +6,7 @@
 /*   By: mhogg <mhogg@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/11 02:29:11 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/13 12:24:28 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/14 12:42:16 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,6 @@ void	rotate_left(t_all all)
 
 void	move_left_rigth(t_all *all, int keycode)
 {
-	
-
 	if (keycode == 0)
 	{
 		if (all->scene->map[(int)(all->var->pos_x - all->var->dir_y
@@ -52,8 +50,6 @@ void	move_left_rigth(t_all *all, int keycode)
 		if (all->scene->map[(int)(all->var->pos_x)][(int)(all->var->pos_y
 		+ all->var->dir_x * all->var->move_speed)] == '0')
 			all->var->pos_y += all->var->dir_x * all->var->move_speed;
-		printf("move scene.pos_x = %.2f, pos_y = %.2f\n", all->scene->pos_x, all->scene->pos_x);
-		printf("move var.pos_x = %.2f, pos_y = %.2f\n", all->var->pos_x, all->var->pos_x);
 	}
 	if (keycode == 2)
 	{
@@ -63,8 +59,6 @@ void	move_left_rigth(t_all *all, int keycode)
 		if (all->scene->map[(int)(all->var->pos_x)][(int)(all->var->pos_y
 		- all->var->dir_x * all->var->move_speed)] == '0')
 			all->var->pos_y -= all->var->dir_x * all->var->move_speed;
-		printf("move scene.pos_x = %.2f, pos_y = %.2f\n", all->scene->pos_x, all->scene->pos_x);
-		printf("move var.pos_x = %.2f, pos_y = %.2f\n", all->var->pos_x, all->var->pos_x);
 	}
 }
 

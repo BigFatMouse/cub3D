@@ -6,7 +6,7 @@
 /*   By: mhogg <mhogg@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/04 11:11:04 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/13 13:18:47 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/14 15:24:14 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,17 +50,6 @@ int		check_params(const char *str, const char *check)
 	}
 	return (0);
 }
-
-// void	parce_r(const char *line, t_all *all)
-// {
-// 	if (check_params(line, "0123456789 	,") || count_params(line) != 2)
-// 		ft_error(ERR_CODE_2);
-// 	skip_spaces(&line);
-// 	all->scene->i_width = ft_atoi_move(&line);
-// 	skip_spaces(&line);
-// 	all->scene->i_height = ft_atoi_move(&line);
-// 	all->flags->r++;
-// }
 
 unsigned		ft_atoi_parce(const char **str, t_all *all)
 {
@@ -166,13 +155,8 @@ void	parce_color(const char *line, t_all *all)
 
 void	parce_player1(t_all *all, char c, int x, int y)
 {
-	// all->scene->pos_x = (double)y + 0.5;
-	// all->scene->pos_y = (double)x + 0.5;
 	all->var->pos_x = (float)y + 0.5;
 	all->var->pos_y = (float)x + 0.5;
-	// printf("parcer scene.pos_x = %.2f, pos_y = %.2f\n", all->scene->pos_x, all->scene->pos_x);
-	// printf("parcer var.pos_x = %.2f, pos_y = %.2f\n", all->var->pos_x, all->var->pos_x);
-
 	all->flags->player++;
 	all->scene->map[y][x] = '0';
 	if (c == 'N')
@@ -194,7 +178,6 @@ void	parce_player1(t_all *all, char c, int x, int y)
 void	parce_player(t_all *all, char c, int x, int y)
 {
 	parce_player1(all, c, x, y);
-	//printf("parcer1 pos_x = %.2f, pos_y = %.2f\n", all->scene->pos_x, all->scene->pos_x);
 
 	if (c == 'W')
 	{
@@ -281,10 +264,20 @@ void	parce_map(t_all *all)
 	parce_sprite(all);
 }
 
+int check_extension(char *name, char *ext)
+{
+	int	len;
+
+	len = ft_strlen(name);
+	if (((ft_strnstr(name, ext, len)) != name + len - 4) || len <= 4)
+		return(1);
+	return (0);
+}
+
 void	parce_params(char **params, t_all *all, int size)
 {
 	int	i;
-
+	
 	i = -1;
 	while (params[++i])
 	{
@@ -322,9 +315,10 @@ char	**make_map(t_list **head, int size)
 	tmp = *head;
 	while (tmp)
 	{
-		params[++i] = tmp->content;
+		params[++i] = ft_strdup(tmp->content);
 		tmp = tmp->next;
 	}
+	ft_lstclear(head, free);
 	return (params);
 }
 
@@ -335,22 +329,17 @@ void	parcer(int fd, t_all *all)
 	t_list	*tmp;
 	char	**params;
 	int		i;
+	int		size;
 
+	size = 0;
 	line = NULL;
 	head = NULL;
 	while (get_next_line(fd, &line))
 		ft_lstadd_back(&head, ft_lstnew(line));
 	ft_lstadd_back(&head, ft_lstnew(line));
-	if (!(params = malloc((ft_lstsize(head) + 1) * sizeof(char *))))
-		ft_error(ERR_CODE_0);
-	i = -1;
-	tmp = head;
-	while (tmp)
-	{
-		params[++i] = tmp->content;
-		tmp = tmp->next;
-	}
-	parce_params(params, all, ft_lstsize(head));
+	params = make_map(&head, ft_lstsize(head));
+	ft_lstclear(&head, free);
+	parce_params(params, all, size);
 	if (all->flags->r || all->flags->c || all->flags->f || all->flags->s ||
 	all->flags->no || all->flags->so || all->flags->we || all->flags->ea)
 		ft_error(ERR_CODE_1);

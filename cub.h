@@ -15,20 +15,21 @@
 // #define tex_width 64
 // #define tex_height 64
 
-#define ERR_CODE_0 "Malloc error"
-#define ERR_CODE_1 "Запомните твари, я не сломаюсь"
-#define ERR_CODE_2 "Resolution is invalid"
-#define ERR_CODE_3 "Texture or sprite file does not exist"
-#define ERR_CODE_4 "Color parameter is invalid"
-#define ERR_CODE_5 "Map contains forbidden symbols"
-#define ERR_CODE_6 "Map is not closed"
-#define ERR_CODE_7 "There must be one player on the map"
-#define ERR_CODE_8 "Can not create screenshot"
-#define ERR_CODE_9 "Put one or two argument to compile"
-#define ERR_CODE_10 "To save image enter '––save' as a second argument"
-#define ERR_CODE_11 "Resolution too large to save image"
-#define ERR_CODE_12 "Scene file is invalid"
-#define ERR_CODE_13 "Can't open scene file"
+#define ERR_CODE_0 "Error\nMalloc error"
+#define ERR_CODE_1 "Error\nЗапомните твари, я не сломаюсь"
+#define ERR_CODE_2 "Error\nResolution is invalid"
+#define ERR_CODE_3 "Error\nTexture or sprite file does not exist"
+#define ERR_CODE_4 "Error\nColor parameter is invalid"
+#define ERR_CODE_5 "Error\nMap contains forbidden symbols"
+#define ERR_CODE_6 "Error\nMap is not closed"
+#define ERR_CODE_7 "Error\nThere must be one player on the map"
+#define ERR_CODE_8 "Error\nCan not create screenshot"
+#define ERR_CODE_9 "Error\nPut one or two argument to compile"
+#define ERR_CODE_10 "Error\nTo save image enter '––save' as a second argument"
+#define ERR_CODE_11 "Error\nResolution too large to save image"
+#define ERR_CODE_12 "Error\nScene file is invalid"
+#define ERR_CODE_13 "Error\nCan't open scene file"
+#define ERR_CODE_14 "Error\nTexture file must hav .xpm"
 
 
 typedef struct  s_mlx
@@ -92,8 +93,6 @@ typedef	struct	s_var
 	int			map_y;
 	int			side;
 	int			hit;
-	// int			tex_width;
-	// int			tex_height;
 	int			line_height;
 	double		delta_distx;
 	double		delta_disty;
@@ -175,5 +174,6 @@ int				close_func(void);
 void			put_sprites(t_all all);
 void			sort_sprites(t_all all);
 void			make_screenshot(t_all	all);
+int 			check_extension(char *name, char *ext);
 
 #endif
