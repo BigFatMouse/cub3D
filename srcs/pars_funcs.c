@@ -6,7 +6,7 @@
 /*   By: mhogg <mhogg@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 16:40:52 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/14 22:10:03 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/14 22:27:19 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,8 +83,6 @@ unsigned	ft_atoi_parce(const char **str, t_all *all)
 		}
 		(*str)++;
 	}
-	printf("num = %d\n",num);
-	printf("flag = %d\n",all->flags->screenshot);
 	return (num);
 }
 

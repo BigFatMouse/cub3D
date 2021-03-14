@@ -6,7 +6,7 @@
 /*   By: mhogg <mhogg@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/04 11:11:04 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/14 20:57:57 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/14 22:53:34 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,6 +150,13 @@ void	check_map(t_all *all, int x, int y)
 		ft_error(ERR_CODE_6);
 }
 
+// void	check_last_line(t_all *all)
+// {
+	
+// 	if (all->scene->map[all->scene->m_width][x] == ' ' || map[all->scene->m_width][x] == '1')
+// 		ft_error(ERR_CODE_6);
+// }
+
 void	parce_sprite(t_all *all)
 {
 	int		x;
@@ -158,12 +165,11 @@ void	parce_sprite(t_all *all)
 	char	c;
 	int		spr;
 
-	y = -1;
-	i = 0;
+	y = 0;
 	spr = all->scene->spr_num;
 	if (!(all->sprite = malloc(sizeof(t_sprite) * spr)))
 		ft_error(ERR_CODE_0);
-	while (all->scene->map[++y])
+	while (y < all->scene->m_width)
 	{
 		x = -1;
 		while ((c = all->scene->map[y][++x]) != '\0')
@@ -175,6 +181,7 @@ void	parce_sprite(t_all *all)
 				i++;
 			}
 		}
+		y++;
 	}
 }
 
@@ -185,8 +192,8 @@ void	parce_map(t_all *all)
 	char	c;
 
 	all->scene->spr_num = 0;
-	y = -1;
-	while (all->scene->map[++y])
+	y = 0;
+	while (y < all->scene->m_width - 1)
 	{
 		if (check_params(all->scene->map[y], "012 NWSE"))
 			ft_error(ERR_CODE_5);
@@ -200,6 +207,19 @@ void	parce_map(t_all *all)
 				all->scene->spr_num++;
 			if (c == 'N' || c == 'S' || c == 'W' || c == 'E')
 				parce_player(all, c, x, y);
+		}
+		y++;
+	}
+	x = -1;
+	printf("y = %d\n", y);
+	
+	while (all->scene->map[y][++x] != '\0')
+	{
+		printf("%c", all->scene->map[y][x]);
+		if (all->scene->map[y][x] != ' ' && all->scene->map[y][x] != '1')
+		{
+			printf("%c", all->scene->map[y][x]);
+			ft_error(ERR_CODE_6);
 		}
 	}
 	if (all->flags->player)
