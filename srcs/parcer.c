@@ -6,7 +6,7 @@
 /*   By: mhogg <mhogg@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/04 11:11:04 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/14 18:10:14 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/14 20:57:57 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,11 @@
 
 void	parce_r(const char *line, t_all *all)
 {
-	if (check_params(line, "0123456789 	,") || count_params(line) != 2)
+	if (check_params(line, "0123456789 	") || count_params(line) != 2)
 		ft_error(ERR_CODE_2);
-	skip_spaces(&line);
+	skip_simbol(&line, ' ');
 	all->scene->i_width = ft_atoi_parce(&line, all);
-	skip_spaces(&line);
+	skip_simbol(&line, ' ');
 	all->scene->i_height = ft_atoi_parce(&line, all);
 	all->flags->r++;
 }
@@ -69,11 +69,13 @@ int		parce_col(const char *line, t_all *all)
 	int	g;
 	int	b;
 
-	skip_spaces(&line);
+	skip_simbol(&line, ' ');
+	if (check_params(line, "0123456789,") || count_params(line) != 3 || count_coma(line) != 2)
+		ft_error(ERR_CODE_4);
 	r = ft_atoi_move(&line);
-	skip_spaces(&line);
+	skip_simbol(&line, ',');
 	g = ft_atoi_move(&line);
-	skip_spaces(&line);
+	skip_simbol(&line, ',');
 	b = ft_atoi_move(&line);
 	if (r > 255 || g > 255 || b > 255)
 		ft_error(ERR_CODE_4);

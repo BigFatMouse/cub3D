@@ -6,7 +6,7 @@
 /*   By: mhogg <mhogg@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 16:31:03 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/14 19:47:53 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/14 21:53:12 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,7 @@ void	parce_args(t_all *all, int argc, char **argv)
 		if (argc == 3)
 		{
 			if (!ft_strncmp(argv[2], "--save", ft_strlen(argv[2])))
-			{
 				all->flags->screenshot = 1;
-				ft_putendl_fd("\nImage saved", 1);
-			}
 			else
 				ft_error(ERR_CODE_10);
 		}
@@ -48,7 +45,7 @@ void	parce_params(char **params, t_all *all, int size)
 	{
 		if (params[i][0] == 'R')
 			parce_r(++params[i], all);
-		else if (ft_strchr("FC", params[i][0]) && count_params(params[i]) == 4)
+		else if (ft_strchr("FC", params[i][0]))
 			parce_color(params[i], all);
 		else if (params[i][0] == 'S' && count_params(params[i]) == 2)
 			parce_s(++params[i], all);
@@ -61,7 +58,7 @@ void	parce_params(char **params, t_all *all, int size)
 			all->scene->map = params + i;
 			all->scene->m_width = size - i;
 			all->flags->map++;
-			printf("size: %d", all->scene->m_width);
+			//printf("size: %d", all->scene->m_width);
 			parce_map(all);
 			break ;
 		}
@@ -120,12 +117,8 @@ void	parcer(int fd, t_all *all)
 	{
 		ft_lstadd_back(&head, ft_lstnew(line));
 		rb = get_next_line(fd, &line);
-		printf("gnl%d\n", rb);
 	}
-	printf("gnl%d\n", rb);
-	
 	ft_lstadd_back(&head, ft_lstnew(line));
-
 	size = ft_lstsize(head);
 	params = make_map(&head, size);
 	parce_params(params, all, size);

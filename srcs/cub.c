@@ -6,7 +6,7 @@
 /*   By: mhogg <mhogg@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/25 20:06:15 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/14 18:35:14 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/14 22:18:58 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,10 +46,10 @@ void		check_screen_size(t_all all)
 	int max_height;
 
 	mlx_get_screen_size(all.mlx->mlx_ptr, &max_width, &max_height);
-	if (all.scene->i_width > max_width)
-		all.scene->i_width = max_width;
-	if (all.scene->i_height > max_height)
-		all.scene->i_height = max_height;
+		if (all.scene->i_width > max_width)
+			all.scene->i_width = max_width;
+		if (all.scene->i_height > max_height)
+			all.scene->i_height = max_height;
 }
 
 void	calculate_ray(t_all all, int x)
@@ -311,18 +311,24 @@ void	draw_all (t_all all)
 	if(!(all.var->z_buffer = malloc(sizeof(double) * all.scene->i_width)))
 		ft_error(ERR_CODE_0);
 	all.mlx->mlx_ptr = mlx_init();
-	check_screen_size(all);
+	if (all.flags->screenshot != 1) 
+		check_screen_size(all);
 	all_mlx(&all);
-	check_screen_size(all);
-	put_scene(all);
-	put_sprites(all);
 	if (all.flags->screenshot == 1)
 	{
+		put_scene(all);
+		put_sprites(all);
 		make_screenshot(all);
 		ft_putendl_fd("\nImage saved", 1);
+		printf("R = %d x %d\n", all.scene->i_width, all.scene->i_height);
 	}
 	else
 	{
+		
+		printf("R = %d x %d\n", all.scene->i_width, all.scene->i_height);
+		printf("flag = %d\n", all.flags->screenshot);
+		put_scene(all);
+		put_sprites(all);
 		mlx_put_image_to_window(all.mlx->mlx_ptr, all.mlx->win_ptr, all.data->img, 0, 0);
 		mlx_hook(all.mlx->win_ptr, 2, 1L<<0, key_hook, &all);
 		mlx_hook(all.mlx->win_ptr, 17, 1L<<0, close_func, 0);

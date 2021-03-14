@@ -6,16 +6,29 @@
 /*   By: mhogg <mhogg@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 16:40:52 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/14 18:00:39 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/14 22:10:03 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../cub.h"
 
-void		skip_spaces(const char **str)
+void		skip_simbol(const char **str, char c)
 {
-	while (**str == ' ' || **str == '\t' || **str == ',')
+	while (**str == c)
 		(*str)++;
+}
+
+int		count_coma(const char *str)
+{
+	int	count;
+	int	i;
+
+	count = 0;
+	i = -1;
+	while (str[++i] != '\0')
+		if(str[i] == ',')
+			count++;
+	return (count);	
 }
 
 int			count_params(char const *s)
@@ -66,10 +79,12 @@ unsigned	ft_atoi_parce(const char **str, t_all *all)
 		{
 			if (all->flags->screenshot == 1)
 				ft_error(ERR_CODE_11);
-			return (6000);
+				return (6000);
 		}
 		(*str)++;
 	}
+	printf("num = %d\n",num);
+	printf("flag = %d\n",all->flags->screenshot);
 	return (num);
 }
 
