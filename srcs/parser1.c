@@ -6,7 +6,7 @@
 /*   By: mhogg <mhogg@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 16:31:03 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/14 21:53:12 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/15 21:34:17 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,19 @@ void	parce_args(t_all *all, int argc, char **argv)
 		ft_error(ERR_CODE_9);
 }
 
+void	check_flags(t_all *all)
+{
+	if (all->flags->r)
+		ft_error(ERR_CODE_2);
+	if (all->flags->c || all->flags->f)
+		ft_error(ERR_CODE_4);
+	if (all->flags->s || all->flags->no || all->flags->so ||
+		all->flags->we || all->flags->ea)
+		ft_error(ERR_CODE_1);
+	if (all->flags->map)
+		ft_error(ERR_CODE_15);
+}
+
 void	parce_params(char **params, t_all *all, int size)
 {
 	int	i;
@@ -57,28 +70,12 @@ void	parce_params(char **params, t_all *all, int size)
 		{
 			all->scene->map = params + i;
 			all->scene->m_width = size - i;
-			all->flags->map++;
-			//printf("size: %d", all->scene->m_width);
 			parce_map(all);
 			break ;
 		}
 		else
-			ft_error(ERR_CODE_1);
+			ft_error(ERR_CODE_18);
 	}
-}
-
-void	check_flags(t_all *all)
-{
-	if (all->flags->r)
-		ft_error(ERR_CODE_2);
-	if (all->flags->c || all->flags->f)
-		ft_error(ERR_CODE_4);
-	if (all->flags->s)
-		ft_error(ERR_CODE_4);
-	if (all->flags->s || all->flags->no || all->flags->so || all->flags->we || all->flags->ea)
-		ft_error(ERR_CODE_1);
-	if (all->flags->map)
-		ft_error(ERR_CODE_15);
 }
 
 char	**make_map(t_list **head, int size)
@@ -93,7 +90,8 @@ char	**make_map(t_list **head, int size)
 	tmp = *head;
 	while (tmp)
 	{
-		params[++i] = ft_strdup(tmp->content);
+		if (!(params[++i] = ft_strdup(tmp->content)))
+			ft_error(ERR_CODE_0);
 		tmp = tmp->next;
 	}
 	ft_lstclear(head, free);
@@ -104,9 +102,9 @@ void	parcer(int fd, t_all *all)
 {
 	char	*line;
 	t_list	*head;
+	t_list	*elem;
 	char	**params;
 	int		rb;
-	int		size;
 
 	line = NULL;
 	head = NULL;
@@ -115,13 +113,15 @@ void	parcer(int fd, t_all *all)
 		ft_error(ERR_CODE_16);
 	while ((rb > 0))
 	{
-		ft_lstadd_back(&head, ft_lstnew(line));
+		if (!(elem = ft_lstnew(line)))
+			ft_error(ERR_CODE_0);
+		ft_lstadd_back(&head, elem);
 		rb = get_next_line(fd, &line);
 	}
 	ft_lstadd_back(&head, ft_lstnew(line));
-	size = ft_lstsize(head);
-	params = make_map(&head, size);
-	parce_params(params, all, size);
+	all->scene->size = ft_lstsize(head);
+	params = make_map(&head, all->scene->size);
+	parce_params(params, all, all->scene->size);
 	ft_lstclear(&head, free);
 	check_flags(all);
 }

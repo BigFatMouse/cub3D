@@ -3,30 +3,30 @@
 /*                                                        :::      ::::::::   */
 /*   ft_atof_move.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhogg <mhogg@student.21-school.ru>         +#+  +:+       +#+        */
+/*   By: mhogg <mhogg@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/20 20:50:51 by mhogg             #+#    #+#             */
-/*   Updated: 2021/02/21 00:01:31 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/15 21:38:58 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-float		ft_atof_move(const char **str)
+float	ft_atof_move(const char **str)
 {
-	int 	num1;
-	int 	num2;
+	int		num1;
+	int		num2;
 	float	minus;
 	int		i;
 	int		len;
-	
+
 	minus = 1;
 	i = 1;
 	num2 = 0;
 	if ((**str == '-') && (*str)++)
 		minus = -1;
 	num1 = ft_atoi_move(str);
-	if(**str == '.')
+	if (**str == '.')
 	{
 		(*str)++;
 		num2 = ft_atoi_move(str);

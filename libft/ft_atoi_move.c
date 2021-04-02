@@ -6,11 +6,11 @@
 /*   By: mhogg <mhogg@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/20 15:48:55 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/12 16:05:29 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/15 21:38:23 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-int		ft_atoi_move(const char **str)
+int	ft_atoi_move(const char **str)
 {
 	int num;
 

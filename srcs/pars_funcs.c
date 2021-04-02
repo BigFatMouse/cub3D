@@ -6,7 +6,7 @@
 /*   By: mhogg <mhogg@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 16:40:52 by mhogg             #+#    #+#             */
-/*   Updated: 2021/03/14 22:27:19 by mhogg            ###   ########.fr       */
+/*   Updated: 2021/03/15 20:47:36 by mhogg            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void		skip_simbol(const char **str, char c)
 		(*str)++;
 }
 
-int		count_coma(const char *str)
+int			count_coma(const char *str)
 {
 	int	count;
 	int	i;
@@ -26,9 +26,9 @@ int		count_coma(const char *str)
 	count = 0;
 	i = -1;
 	while (str[++i] != '\0')
-		if(str[i] == ',')
+		if (str[i] == ',')
 			count++;
-	return (count);	
+	return (count);
 }
 
 int			count_params(char const *s)
@@ -79,19 +79,9 @@ unsigned	ft_atoi_parce(const char **str, t_all *all)
 		{
 			if (all->flags->screenshot == 1)
 				ft_error(ERR_CODE_11);
-				return (6000);
+			return (6000);
 		}
 		(*str)++;
 	}
 	return (num);
-}
-
-int			check_extension(char *name, char *ext)
-{
-	int	len;
-
-	len = ft_strlen(name);
-	if (((ft_strnstr(name, ext, len)) != name + len - 4) || len <= 4)
-		return (1);
-	return (0);
 }
